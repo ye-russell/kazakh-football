@@ -42,6 +42,14 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 ## 🏗️ Architecture
 
 ```
+Monorepo (pnpm workspaces)
+
+apps/web      → Angular PWA (Web + Mobile via Capacitor)
+apps/api      → NestJS REST API
+packages/*    → Shared types / contracts (planned)
+        ↓
+   PostgreSQL (Supabase)
+```
 Angular / PWA / Mobile
         ↓
      REST API
@@ -55,7 +63,18 @@ Angular / PWA / Mobile
 
 ## 🧪 Technology Stack
 
-### Backend
+### Monorepo
+- pnpm workspaces
+- Single GitHub repository
+
+### Frontend (apps/web)
+- Angular (latest stable)
+- Standalone components
+- Signals for state management
+- PWA
+- Capacitor (Android / iOS)
+
+### Backend (apps/api)
 - Node.js 20+
 - NestJS
 - TypeScript
@@ -127,22 +146,33 @@ This keeps the project:
 - pnpm
 - PostgreSQL (local or Supabase)
 
-### Setup
+### Monorepo setup
 ```bash
 pnpm install
-pnpm prisma migrate dev
-pnpm prisma db seed
-pnpm dev
+```
+
+### Backend (apps/api)
+```bash
+pnpm --filter api prisma migrate dev
+pnpm --filter api prisma db seed
+pnpm --filter api dev
+```
+
+### Frontend (apps/web)
+```bash
+pnpm --filter web dev
 ```
 
 ### Environment variables
-Create `.env`:
+Create `.env` inside `apps/api`:
 ```env
 DATABASE_URL=postgresql://...
 PORT=3000
 ```
 
 Swagger UI will be available at:
+```
+http://localhost:3000/docs
 ```
 http://localhost:3000/docs
 ```
