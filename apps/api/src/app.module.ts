@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { LeagueModule } from './league/league.module';
 import { TeamsModule } from './teams/teams.module';
 import { MatchesModule } from './matches/matches.module';
+import { StandingsModule } from './standings/standings.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MatchesModule } from './matches/matches.module';
     LeagueModule,
     TeamsModule,
     MatchesModule,
+    StandingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
