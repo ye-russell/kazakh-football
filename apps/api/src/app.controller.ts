@@ -13,18 +13,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
-  @Get('league')
-  @ApiOperation({ summary: 'Get Kazakh Football league information' })
-  @ApiResponse({ status: 200, description: 'Returns league information' })
-  getLeague() {
-    return {
-      appName: 'Kazakh Football',
-      season: 2026,
-      competitions: [
-        { code: 'kpl', name: 'KPL' },
-        { code: 'first', name: 'First League' },
-      ],
-    };
-  }
 }
