@@ -47,9 +47,7 @@ Monorepo (pnpm workspaces)
 apps/web      → Angular PWA (Web + Mobile via Capacitor)
 apps/api      → NestJS REST API
 packages/*    → Shared types / contracts (planned)
-        ↓
-   PostgreSQL (Supabase)
-        ↓
+
 Angular / PWA / Mobile
         ↓
      REST API
