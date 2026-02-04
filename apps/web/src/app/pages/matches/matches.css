@@ -1,7 +1,10 @@
 .matches {
   padding: 2rem;
+  max-width: 900px;
 }
 
 h1 {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  color: #1a1a1a;
 }
+

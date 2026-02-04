@@ -1,0 +1,57 @@
+<div class="matches-list">
+  @if (loading()) {
+    <div class="loading">Loading matches...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error() && matches().length > 0) {
+    <div class="matches-container">
+      @for (match of matches(); track match.id) {
+        <a
+          [routerLink]="['/matches', match.id]"
+          [queryParams]="getLinkQueryParams()"
+          class="match-row">
+          <div class="match-time-status">
+            <div class="time">{{ formatTime(match.kickoffAt) }}</div>
+            <div class="status" [class]="getStatusClass(match.status)">
+              {{ getStatusLabel(match.status) }}
+            </div>
+          </div>
+
+          <div class="match-teams">
+            <div class="team home-team">
+              <span class="team-short">{{ match.homeTeam.shortName }}</span>
+              <span class="team-name">{{ match.homeTeam.name }}</span>
+            </div>
+            <div class="divider"></div>
+            <div class="team away-team">
+              <span class="team-short">{{ match.awayTeam.shortName }}</span>
+              <span class="team-name">{{ match.awayTeam.name }}</span>
+            </div>
+          </div>
+
+          <div class="match-score">
+            @if (match.status === 'finished' || match.status === 'live') {
+              @if (match.homeScore !== null && match.awayScore !== null) {
+                <div class="score">
+                  {{ match.homeScore }} - {{ match.awayScore }}
+                </div>
+              } @else {
+                <div class="score-placeholder">-</div>
+              }
+            } @else {
+              <div class="score-placeholder">-</div>
+            }
+          </div>
+        </a>
+      }
+    </div>
+  }
+
+  @if (!loading() && !error() && matches().length === 0) {
+    <div class="no-matches">No matches scheduled for this round</div>
+  }
+</div>

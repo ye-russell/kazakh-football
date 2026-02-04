@@ -1,7 +1,184 @@
 .match-detail {
   padding: 2rem;
+  max-width: 900px;
 }
 
-h1 {
-  margin-bottom: 1rem;
+.back-link {
+  display: inline-block;
+  margin-bottom: 2rem;
+  color: #1a1a1a;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: #4CAF50;
+}
+
+.loading,
+.error {
+  padding: 2rem;
+  text-align: center;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.loading {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.error {
+  background-color: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+}
+
+.match-header {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.teams {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.team {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.team.home {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.team.away {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.team-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.team-short {
+  font-size: 0.9rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.score {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  font-family: monospace;
+}
+
+.status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.9rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status.status-scheduled {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status.status-live {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.status.status-finished {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.kickoff-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.kickoff-date {
+  font-weight: 500;
+}
+
+.kickoff-time {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.match-meta {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 2rem;
+  background-color: #f9f9f9;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  border: 1px solid #e8e8e8;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.meta-item .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+}
+
+.meta-item .value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+@media (max-width: 768px) {
+  .teams {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .team.home,
+  .team.away {
+    align-items: center;
+    text-align: center;
+  }
+
+  .match-meta {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }

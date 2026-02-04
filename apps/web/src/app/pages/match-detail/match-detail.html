@@ -1,4 +1,52 @@
 <div class="match-detail">
-  <h1>Match Detail</h1>
-  <p>Match details will be displayed here</p>
+  <a class="back-link" [routerLink]="['/matches']" [queryParams]="getBackQueryParams()">
+    ← Back to matches
+  </a>
+
+  @if (loading()) {
+    <div class="loading">Loading match details...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error() && match(); as match) {
+    <header class="match-header">
+      <div class="teams">
+        <div class="team home">
+          <div class="team-name">{{ match.homeTeam.name }}</div>
+          <div class="team-short">{{ match.homeTeam.shortName }}</div>
+        </div>
+
+        <div class="score-block">
+          <div class="score">{{ scoreDisplay() }}</div>
+          <div class="status" [class]="getStatusClass(match.status)">
+            {{ getStatusLabel(match.status) }}
+          </div>
+        </div>
+
+        <div class="team away">
+          <div class="team-name">{{ match.awayTeam.name }}</div>
+          <div class="team-short">{{ match.awayTeam.shortName }}</div>
+        </div>
+      </div>
+
+      <div class="kickoff-info">
+        <div class="kickoff-date">{{ kickoffDate() }}</div>
+        <div class="kickoff-time">{{ kickoffTime() }}</div>
+      </div>
+    </header>
+
+    <section class="match-meta">
+      <div class="meta-item">
+        <span class="label">Round</span>
+        <span class="value">{{ match.round }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="label">Competition</span>
+        <span class="value">{{ match.competition?.code || '-' }}</span>
+      </div>
+    </section>
+  }
 </div>

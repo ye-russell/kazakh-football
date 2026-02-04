@@ -1,4 +1,54 @@
 <div class="standings">
   <h1>Standings</h1>
-  <p>Standings will be displayed here</p>
+
+  @if (loading()) {
+    <div class="loading">Loading standings...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error() && standingsWithPosition().length > 0) {
+    <table class="standings-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Team</th>
+          <th>P</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>GF</th>
+          <th>GA</th>
+          <th>GD</th>
+          <th>Pts</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of standingsWithPosition(); track row.team.id) {
+          <tr>
+            <td class="position">{{ row.position }}</td>
+            <td class="team-name">
+              <span class="team-link">{{ row.team.name }}</span>
+            </td>
+            <td>{{ row.played }}</td>
+            <td>{{ row.wins }}</td>
+            <td>{{ row.draws }}</td>
+            <td>{{ row.losses }}</td>
+            <td>{{ row.goalsFor }}</td>
+            <td>{{ row.goalsAgainst }}</td>
+            <td [class.negative]="row.goalDiff < 0" [class.positive]="row.goalDiff > 0">
+              {{ row.goalDiff > 0 ? '+' : '' }}{{ row.goalDiff }}
+            </td>
+            <td class="points">{{ row.points }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (!loading() && !error() && standingsWithPosition().length === 0) {
+    <div class="no-data">No standings data available</div>
+  }
 </div>

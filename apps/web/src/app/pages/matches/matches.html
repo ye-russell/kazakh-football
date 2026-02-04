@@ -1,4 +1,15 @@
 <div class="matches">
   <h1>Matches</h1>
-  <p>Match list will be displayed here</p>
+
+  <app-matchweek-selector 
+    [round]="currentRound()"
+    (roundChanged)="onRoundChanged($event)">
+  </app-matchweek-selector>
+
+  <app-matches-list
+    [matches]="matches()"
+    [loading]="loading()"
+    [error]="error()"
+    [round]="currentRound()">
+  </app-matches-list>
 </div>

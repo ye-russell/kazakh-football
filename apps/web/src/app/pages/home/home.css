@@ -1,8 +1,222 @@
 .home {
   padding: 2rem;
-  text-align: center;
+  max-width: 1100px;
 }
 
 h1 {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+  font-size: 2.5rem;
+}
+
+.subtitle {
+  margin-bottom: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.card {
+  background-color: white;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.card h2 {
+  margin: 0;
+  color: #1a1a1a;
+  font-size: 1.25rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.link-button {
+  font-size: 0.95rem;
+  color: #4CAF50;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+.matchweek-card {
+  grid-column: 1 / 2;
+}
+
+.standings-card {
+  grid-column: 2 / 3;
+}
+
+.standings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.standings-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+}
+
+.standings-row .rank {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.standings-row .team {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.standings-row .points {
+  font-weight: 700;
+  color: #4CAF50;
+}
+
+.quick-links-card {
+  grid-column: 2 / 3;
+}
+
+.quick-links {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.quick-link {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.quick-link:hover {
+  border-color: #4CAF50;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.quick-link .title {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.quick-link .subtitle {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.stats-card {
+  grid-column: 1 / 2;
+}
+
+.stats-placeholder {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px dashed #d9d9d9;
+}
+
+.stats-placeholder .badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.stats-placeholder p {
+  margin: 0;
+  color: #555;
+}
+
+.loading,
+.error,
+.no-data {
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.loading {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.error {
+  background-color: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+}
+
+.no-data {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+@media (max-width: 1024px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchweek-card,
+  .standings-card,
+  .quick-links-card,
+  .stats-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .home {
+    padding: 1.25rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 }

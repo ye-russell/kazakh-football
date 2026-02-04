@@ -219,6 +219,7 @@ API is designed so that:
 - ✅ Stable endpoints
 - ✅ Seeded realistic data
 - ✅ CORS enabled for frontend integration
+- ⚠️ Missing matchweek metadata (max round) for frontend matchweek selector
 
 Frontend can now safely start.
 
@@ -229,12 +230,16 @@ Frontend can now safely start.
 - PWA
 - Capacitor for Android/iOS
 
-### Initial frontend features
+### Initial frontend features (implemented)
+- App shell + routing skeleton
+- Environment config for API base URL
+- API client + domain services
+- Home page (matchweek fixtures, standings snapshot, quick links, stats placeholder)
 - Standings page
-- Matches list (by round/date)
-- Teams list
-- Team detail page
+- Matches list with matchweek navigation
 - Match detail page
+- Teams list with search
+- Team detail page with recent matches
 
 ---
 

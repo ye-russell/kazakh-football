@@ -1,4 +1,39 @@
 <div class="teams">
   <h1>Teams</h1>
-  <p>Team list will be displayed here</p>
+
+  <div class="search-bar">
+    <input
+      type="search"
+      class="search-input"
+      placeholder="Search teams"
+      aria-label="Search teams"
+      (input)="onSearchInput($event)"
+    />
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Loading teams...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error() && filteredTeams().length > 0) {
+    <div class="teams-grid">
+      @for (team of filteredTeams(); track team.id) {
+        <a [routerLink]="['/teams', team.id]" class="team-card">
+          <div class="team-name">{{ team.name }}</div>
+          <div class="team-short">{{ team.shortName }}</div>
+          @if (team.city) {
+            <div class="team-city">{{ team.city }}</div>
+          }
+        </a>
+      }
+    </div>
+  }
+
+  @if (!loading() && !error() && filteredTeams().length === 0) {
+    <div class="no-results">No teams found</div>
+  }
 </div>

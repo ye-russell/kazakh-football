@@ -1,4 +1,82 @@
 <div class="home">
   <h1>Kazakh Football</h1>
-  <p>Welcome to the Kazakhstan Premier League app</p>
+  <p class="subtitle">Kazakhstan Premier League</p>
+
+  <div class="home-grid">
+    <section class="card matchweek-card">
+      <div class="card-header">
+        <h2>This Matchweek</h2>
+        <button class="link-button" (click)="viewAllMatches()">View all</button>
+      </div>
+
+      <app-matchweek-selector
+        [round]="currentRound()"
+        (roundChanged)="onRoundChanged($event)">
+      </app-matchweek-selector>
+
+      <app-matches-list
+        [matches]="matches()"
+        [loading]="loading()"
+        [error]="error()"
+        [round]="currentRound()">
+      </app-matches-list>
+    </section>
+
+    <section class="card standings-card">
+      <div class="card-header">
+        <h2>Standings Snapshot</h2>
+        <a class="link-button" [routerLink]="['/standings']">View full table</a>
+      </div>
+
+      @if (standingsLoading()) {
+        <div class="loading">Loading standings...</div>
+      }
+
+      @if (standingsError()) {
+        <div class="error">{{ standingsError() }}</div>
+      }
+
+      @if (!standingsLoading() && !standingsError() && topStandings().length > 0) {
+        <div class="standings-list">
+          @for (row of topStandings(); track row.team.id; let index = $index) {
+            <div class="standings-row">
+              <div class="rank">{{ index + 1 }}</div>
+              <div class="team">{{ row.team.name }}</div>
+              <div class="points">{{ row.points }} pts</div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (!standingsLoading() && !standingsError() && topStandings().length === 0) {
+        <div class="no-data">No standings available</div>
+      }
+    </section>
+
+    <section class="card quick-links-card">
+      <h2>Quick Links</h2>
+      <div class="quick-links">
+        <a class="quick-link" [routerLink]="['/teams']">
+          <span class="title">Teams</span>
+          <span class="subtitle">All KPL clubs</span>
+        </a>
+        <a class="quick-link" [routerLink]="['/matches']">
+          <span class="title">Matches</span>
+          <span class="subtitle">Fixtures & results</span>
+        </a>
+        <a class="quick-link" [routerLink]="['/standings']">
+          <span class="title">Table</span>
+          <span class="subtitle">Full standings</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="card stats-card">
+      <h2>Stats</h2>
+      <div class="stats-placeholder">
+        <div class="badge">Coming soon</div>
+        <p>Top scorers, form guide, and team stats.</p>
+      </div>
+    </section>
+  </div>
 </div>

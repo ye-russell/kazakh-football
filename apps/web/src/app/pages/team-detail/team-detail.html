@@ -1,4 +1,61 @@
 <div class="team-detail">
-  <h1>Team Detail</h1>
-  <p>Team details will be displayed here</p>
+  <a class="back-link" [routerLink]="['/teams']">← Back to teams</a>
+
+  @if (loading()) {
+    <div class="loading">Loading team...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error() && team(); as team) {
+    <header class="team-header">
+      <div class="team-info">
+        <h1 class="team-name">{{ team.name }}</h1>
+        <div class="team-short">{{ team.shortName }}</div>
+        @if (team.city) {
+          <div class="team-city">{{ team.city }}</div>
+        }
+      </div>
+    </header>
+
+    <section class="recent-matches">
+      <h2>Recent Matches</h2>
+
+      @if (recentMatches().length > 0) {
+        <div class="matches-list">
+          @for (match of recentMatches(); track match.id) {
+            <a class="match-row" [routerLink]="['/matches', match.id]">
+              <div class="match-date">{{ formatKickoffDate(match.kickoffAt) }}</div>
+              <div class="match-teams">
+                <span class="team-name">{{ match.homeTeam.shortName }}</span>
+                <span class="divider">vs</span>
+                <span class="team-name">{{ match.awayTeam.shortName }}</span>
+              </div>
+              <div class="match-score">
+                @if (match.homeScore !== null && match.awayScore !== null) {
+                  {{ match.homeScore }} - {{ match.awayScore }}
+                } @else {
+                  -
+                }
+              </div>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="no-matches">No matches found</div>
+      }
+    </section>
+
+    <section class="placeholder-section">
+      <h2>Team Stats</h2>
+      <p>Stats section will be added later.</p>
+    </section>
+
+    <section class="placeholder-section">
+      <h2>Squad</h2>
+      <p>Squad section will be added later.</p>
+    </section>
+  }
 </div>
