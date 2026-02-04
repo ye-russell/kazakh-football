@@ -1,0 +1,24 @@
+<div class="layout">
+  <header class="header">
+    <nav class="nav">
+      <a routerLink="/" class="logo">Kazakh Football</a>
+      <ul class="nav-links">
+        <li>
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+        </li>
+        <li>
+          <a routerLink="/standings" routerLinkActive="active">Standings</a>
+        </li>
+        <li>
+          <a routerLink="/matches" routerLinkActive="active">Matches</a>
+        </li>
+        <li>
+          <a routerLink="/teams" routerLinkActive="active">Teams</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <main class="main">
+    <router-outlet />
+  </main>
+</div>
