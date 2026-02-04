@@ -117,6 +117,7 @@ Supabase is used **only as a database** at this stage; Prisma is the data access
 - awayScore (nullable)
 
 Indexes are defined for efficient querying by competition, round, kickoff time, and teams.
+Constraint: homeTeamId != awayTeamId (prevents a team from playing itself).
 
 ---
 
@@ -174,6 +175,7 @@ Reasoning:
 - Database migrated successfully
 - Seed script implemented and run
 - Real competitions, teams, matches created
+- Match constraint added (homeTeamId != awayTeamId)
 
 **Step 4 – Read Endpoints**
 - GET /league
@@ -189,6 +191,7 @@ Reasoning:
 **Additional endpoints added**
 - GET /teams/:id
 - GET /matches/:id
+- GET /health
 
 Backend MVP is functionally complete.
 
@@ -201,6 +204,7 @@ Backend MVP is functionally complete.
 - DTO validation
 - Clear HTTP semantics (400 / 404)
 - Swagger as source of truth
+- Global exception filter for consistent error responses
 
 API is designed so that:
 - Frontend can start immediately
@@ -214,6 +218,7 @@ API is designed so that:
 - ✅ DB accessible
 - ✅ Stable endpoints
 - ✅ Seeded realistic data
+- ✅ CORS enabled for frontend integration
 
 Frontend can now safely start.
 
