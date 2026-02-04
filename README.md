@@ -49,7 +49,7 @@ apps/api      → NestJS REST API
 packages/*    → Shared types / contracts (planned)
         ↓
    PostgreSQL (Supabase)
-```
+        ↓
 Angular / PWA / Mobile
         ↓
      REST API
