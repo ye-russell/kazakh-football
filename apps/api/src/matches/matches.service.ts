@@ -45,4 +45,43 @@ export class MatchesService {
       },
     });
   }
+
+  async getMatchById(id: string) {
+    const match = await this.prisma.match.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        round: true,
+        kickoffAt: true,
+        status: true,
+        homeScore: true,
+        awayScore: true,
+        competition: {
+          select: {
+            code: true,
+          },
+        },
+        homeTeam: {
+          select: {
+            id: true,
+            name: true,
+            shortName: true,
+          },
+        },
+        awayTeam: {
+          select: {
+            id: true,
+            name: true,
+            shortName: true,
+          },
+        },
+      },
+    });
+
+    if (!match) {
+      throw new NotFoundException(`Match with id '${id}' not found`);
+    }
+
+    return match;
+  }
 }

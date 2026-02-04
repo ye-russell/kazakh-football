@@ -7,6 +7,7 @@ import { LeagueModule } from './league/league.module';
 import { TeamsModule } from './teams/teams.module';
 import { MatchesModule } from './matches/matches.module';
 import { StandingsModule } from './standings/standings.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { StandingsModule } from './standings/standings.module';
     TeamsModule,
     MatchesModule,
     StandingsModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
