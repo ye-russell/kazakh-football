@@ -174,8 +174,6 @@ Swagger UI will be available at:
 ```
 http://localhost:3000/docs
 ```
-http://localhost:3000/docs
-```
 
 ---
 
