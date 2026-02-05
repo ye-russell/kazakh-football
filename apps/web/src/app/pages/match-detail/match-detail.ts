@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatchesService } from '../../shared/services/matches.service';
 import { Match } from '../../shared/interfaces/api.interfaces';
 
@@ -14,6 +15,7 @@ import { Match } from '../../shared/interfaces/api.interfaces';
 export class MatchDetail implements OnInit {
   private readonly matchesService = inject(MatchesService);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly match = signal<Match | null>(null);
   protected readonly loading = signal(true);
@@ -42,12 +44,12 @@ export class MatchDetail implements OnInit {
   });
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const round = params['round'] ? parseInt(params['round'], 10) : null;
       this.roundQueryParam.set(round);
     });
 
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const matchId = params.get('id');
       if (matchId) {
         this.loadMatch(matchId);

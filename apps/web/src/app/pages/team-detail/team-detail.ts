@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TeamsService } from '../../shared/services/teams.service';
 import { MatchesService } from '../../shared/services/matches.service';
 import { Match, Team } from '../../shared/interfaces/api.interfaces';
@@ -16,6 +17,7 @@ export class TeamDetail implements OnInit {
   private readonly teamsService = inject(TeamsService);
   private readonly matchesService = inject(MatchesService);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly team = signal<Team | null>(null);
   protected readonly matches = signal<Match[]>([]);
@@ -35,7 +37,7 @@ export class TeamDetail implements OnInit {
   });
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const teamId = params.get('id');
       if (teamId) {
         this.loadTeam(teamId);

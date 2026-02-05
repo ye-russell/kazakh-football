@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, output, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output, input, computed } from '@angular/core';
 
 @Component({
   selector: 'app-matchweek-selector',
@@ -9,6 +9,7 @@ import { ChangeDetectionStrategy, Component, output, input } from '@angular/core
 export class MatchweekSelector {
   readonly round = input.required<number>();
   readonly roundChanged = output<number>();
+  readonly isPreviousDisabled = computed(() => this.round() <= 1);
 
   previousRound() {
     if (this.round() > 1) {
@@ -18,9 +19,5 @@ export class MatchweekSelector {
 
   nextRound() {
     this.roundChanged.emit(this.round() + 1);
-  }
-
-  get isPreviousDisabled(): boolean {
-    return this.round() <= 1;
   }
 }

@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatchesService } from '../../shared/services/matches.service';
 import { MatchweekSelector } from '../../shared/components/matchweek-selector/matchweek-selector';
 import { MatchesList } from '../../shared/components/matches-list/matches-list';
@@ -17,6 +18,7 @@ export class Matches implements OnInit {
   private readonly matchesService = inject(MatchesService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly matches = signal<Match[]>([]);
   protected readonly loading = signal(true);
@@ -24,7 +26,7 @@ export class Matches implements OnInit {
   protected readonly currentRound = signal(1);
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const round = params['round'] ? parseInt(params['round'], 10) : 1;
       this.currentRound.set(round);
       this.loadMatches(round);
