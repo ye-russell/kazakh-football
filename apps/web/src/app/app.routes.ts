@@ -1,23 +1,16 @@
 import { Routes } from '@angular/router';
-import { Layout } from './core/layout/layout';
-import { Home } from './pages/home/home';
-import { Standings } from './pages/standings/standings';
-import { Matches } from './pages/matches/matches';
-import { MatchDetail } from './pages/match-detail/match-detail';
-import { Teams } from './pages/teams/teams';
-import { TeamDetail } from './pages/team-detail/team-detail';
 
 export const routes: Routes = [
   {
     path: '',
-    component: Layout,
+    loadComponent: () => import('./core/layout/layout').then((m) => m.Layout),
     children: [
-      { path: '', component: Home },
-      { path: 'standings', component: Standings },
-      { path: 'matches', component: Matches },
-      { path: 'matches/:id', component: MatchDetail },
-      { path: 'teams', component: Teams },
-      { path: 'teams/:id', component: TeamDetail },
+      { path: '', loadComponent: () => import('./pages/home/home').then((m) => m.Home) },
+      { path: 'standings', loadComponent: () => import('./pages/standings/standings').then((m) => m.Standings) },
+      { path: 'matches', loadComponent: () => import('./pages/matches/matches').then((m) => m.Matches) },
+      { path: 'matches/:id', loadComponent: () => import('./pages/match-detail/match-detail').then((m) => m.MatchDetail) },
+      { path: 'teams', loadComponent: () => import('./pages/teams/teams').then((m) => m.Teams) },
+      { path: 'teams/:id', loadComponent: () => import('./pages/team-detail/team-detail').then((m) => m.TeamDetail) },
     ]
   }
 ];
