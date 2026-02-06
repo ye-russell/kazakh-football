@@ -5,7 +5,7 @@
 
 h1 {
   margin-bottom: 2rem;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .loading,
@@ -18,19 +18,19 @@ h1 {
 }
 
 .loading {
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: var(--color-surface);
+  color: var(--color-muted);
 }
 
 .error {
-  background-color: #fee;
-  color: #c33;
-  border: 1px solid #fcc;
+  background-color: var(--color-accent-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-accent);
 }
 
 .no-data {
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: var(--color-surface);
+  color: var(--color-muted);
 }
 
 .standings-table {
@@ -43,7 +43,7 @@ h1 {
 }
 
 .standings-table thead {
-  background-color: #1a1a1a;
+  background-color: var(--color-primary);
   color: white;
   font-weight: 600;
 }
@@ -57,12 +57,12 @@ h1 {
 }
 
 .standings-table tbody tr {
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
   transition: background-color 0.2s;
 }
 
 .standings-table tbody tr:hover {
-  background-color: #f9f9f9;
+  background-color: var(--color-surface);
 }
 
 .standings-table td {
@@ -74,12 +74,12 @@ h1 {
   font-weight: 600;
   width: 60px;
   text-align: center;
-  background-color: #f5f5f5;
+  background-color: var(--color-surface);
 }
 
 .standings-table td.team-name {
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .team-link {
@@ -88,23 +88,23 @@ h1 {
 }
 
 .team-link:hover {
-  color: #4CAF50;
+  color: var(--color-accent);
 }
 
 .standings-table td.points {
   font-weight: 600;
-  background-color: #f5f5f5;
+  background-color: var(--color-surface);
   text-align: center;
   width: 60px;
 }
 
 .standings-table td.positive {
-  color: #4CAF50;
+  color: var(--color-primary);
   font-weight: 500;
 }
 
 .standings-table td.negative {
-  color: #d32f2f;
+  color: var(--color-text);
   font-weight: 500;
 }
 
@@ -115,5 +115,34 @@ h1 {
 
 .standings-table th:nth-child(n + 3) {
   text-align: center;
+}
+
+@media (max-width: 900px) {
+  .standings {
+    padding: 1.5rem;
+  }
+
+  .standings-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .standings {
+    padding: 1.25rem;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .standings-table td.position,
+  .standings-table td.points {
+    width: 48px;
+  }
 }
 

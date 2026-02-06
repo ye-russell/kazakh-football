@@ -6,14 +6,14 @@
 .back-link {
   display: inline-block;
   margin-bottom: 2rem;
-  color: #1a1a1a;
+  color: var(--color-text);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
 }
 
 .back-link:hover {
-  color: #4CAF50;
+  color: var(--color-accent);
 }
 
 .loading,
@@ -25,19 +25,19 @@
 }
 
 .loading {
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: var(--color-surface);
+  color: var(--color-muted);
 }
 
 .error {
-  background-color: #fee;
-  color: #c33;
-  border: 1px solid #fcc;
+  background-color: var(--color-accent-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-accent);
 }
 
 .match-header {
-  background-color: white;
-  border: 1px solid #e0e0e0;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -70,12 +70,12 @@
 .team-name {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .team-short {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -90,7 +90,7 @@
 .score {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text);
   font-family: monospace;
 }
 
@@ -104,18 +104,18 @@
 }
 
 .status.status-scheduled {
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: var(--color-primary-bg);
+  color: var(--color-primary);
 }
 
 .status.status-live {
-  background-color: #ffebee;
-  color: #d32f2f;
+  background-color: var(--color-accent-bg);
+  color: var(--color-primary);
 }
 
 .status.status-finished {
-  background-color: #f0f0f0;
-  color: #666;
+  background-color: var(--color-surface);
+  color: var(--color-muted);
 }
 
 .kickoff-info {
@@ -123,7 +123,7 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  color: #666;
+  color: var(--color-muted);
   font-size: 0.95rem;
 }
 
@@ -133,17 +133,17 @@
 
 .kickoff-time {
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .match-meta {
   margin-top: 1.5rem;
   display: flex;
   gap: 2rem;
-  background-color: #f9f9f9;
+  background-color: var(--color-surface);
   padding: 1rem 1.5rem;
   border-radius: 6px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid var(--color-border);
 }
 
 .meta-item {
@@ -156,13 +156,13 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #999;
+  color: var(--color-subtle);
 }
 
 .meta-item .value {
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 @media (max-width: 768px) {
@@ -180,5 +180,19 @@
   .match-meta {
     flex-direction: column;
     gap: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .match-detail {
+    padding: 1.25rem;
+  }
+
+  .match-header {
+    padding: 1.5rem;
+  }
+
+  .score {
+    font-size: 2rem;
   }
 }

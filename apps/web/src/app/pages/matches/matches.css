@@ -5,6 +5,22 @@
 
 h1 {
   margin-bottom: 2rem;
-  color: #1a1a1a;
+  color: var(--color-text);
+}
+
+@media (max-width: 900px) {
+  .matches {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .matches {
+    padding: 1.25rem;
+  }
+
+  h1 {
+    margin-bottom: 1.5rem;
+  }
 }
 

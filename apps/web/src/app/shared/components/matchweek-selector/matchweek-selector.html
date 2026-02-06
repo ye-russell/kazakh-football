@@ -4,7 +4,8 @@
     [disabled]="isPreviousDisabled()"
     (click)="previousRound()"
     aria-label="Previous round">
-    ← Previous
+    <span class="arrow-icon">‹</span>
+    <span class="arrow-text">Previous</span>
   </button>
   <div class="round-display">
     Matchweek {{ round() }}
@@ -13,6 +14,7 @@
     class="arrow-btn next-btn"
     (click)="nextRound()"
     aria-label="Next round">
-    Next →
+    <span class="arrow-text">Next</span>
+    <span class="arrow-icon">›</span>
   </button>
 </div>

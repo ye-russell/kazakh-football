@@ -29,16 +29,15 @@
             <a class="match-row" [routerLink]="['/matches', match.id]">
               <div class="match-date">{{ formatKickoffDate(match.kickoffAt) }}</div>
               <div class="match-teams">
-                <span class="team-name">{{ match.homeTeam.shortName }}</span>
-                <span class="divider">vs</span>
-                <span class="team-name">{{ match.awayTeam.shortName }}</span>
-              </div>
-              <div class="match-score">
-                @if (match.homeScore !== null && match.awayScore !== null) {
-                  {{ match.homeScore }} - {{ match.awayScore }}
-                } @else {
-                  -
-                }
+                <span class="team-name home-team">{{ match.homeTeam.shortName }}</span>
+                <span class="match-score">
+                  @if (match.homeScore !== null && match.awayScore !== null) {
+                    {{ match.homeScore }} - {{ match.awayScore }}
+                  } @else {
+                    -
+                  }
+                </span>
+                <span class="team-name away-team">{{ match.awayTeam.shortName }}</span>
               </div>
             </a>
           }

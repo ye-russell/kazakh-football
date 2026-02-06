@@ -1,1 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+	--yale-blue: #024682;
+	--alabaster-grey: #D7DDE3;
+	--mustard: #FDD94E;
+
+	--color-bg: #ffffff;
+	--color-surface: var(--alabaster-grey);
+	--color-primary: var(--yale-blue);
+	--color-accent: var(--mustard);
+	--color-accent-dark: #E0B900;
+	--color-text: #111111;
+	--color-muted: rgba(0, 0, 0, 0.6);
+	--color-subtle: rgba(0, 0, 0, 0.45);
+	--color-disabled: rgba(0, 0, 0, 0.35);
+	--color-border: rgba(2, 70, 130, 0.18);
+	--color-border-strong: rgba(2, 70, 130, 0.28);
+	--color-primary-bg: rgba(2, 70, 130, 0.12);
+	--color-accent-bg: rgba(253, 217, 78, 0.35);
+}
+
+body {
+	margin: 0;
+	background-color: var(--color-bg);
+	color: var(--color-text);
+	font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}

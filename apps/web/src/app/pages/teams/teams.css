@@ -5,7 +5,7 @@
 
 h1 {
   margin-bottom: 1.5rem;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .search-bar {
@@ -16,15 +16,15 @@ h1 {
   width: 100%;
   padding: 0.75rem 1rem;
   font-size: 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(253, 217, 78, 0.35);
 }
 
 .loading,
@@ -37,19 +37,19 @@ h1 {
 }
 
 .loading {
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: var(--color-surface);
+  color: var(--color-muted);
 }
 
 .error {
-  background-color: #fee;
-  color: #c33;
-  border: 1px solid #fcc;
+  background-color: var(--color-accent-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-accent);
 }
 
 .no-results {
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: var(--color-surface);
+  color: var(--color-muted);
 }
 
 .teams-grid {
@@ -58,21 +58,37 @@ h1 {
   gap: 1rem;
 }
 
+@media (max-width: 900px) {
+  .teams {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .teams {
+    padding: 1.25rem;
+  }
+
+  .teams-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .team-card {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 1.25rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   text-decoration: none;
   color: inherit;
-  background-color: white;
+  background-color: var(--color-bg);
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .team-card:hover {
-  border-color: #4CAF50;
+  border-color: var(--color-accent);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
@@ -80,17 +96,17 @@ h1 {
 .team-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .team-short {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .team-city {
   font-size: 0.9rem;
-  color: #888;
+  color: var(--color-subtle);
 }

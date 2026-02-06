@@ -22,8 +22,10 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   const port = process.env.PORT ?? 3000;
-  await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
-  console.log(`Swagger UI is available at: http://localhost:${port}/docs`);
+  const host = process.env.HOST ?? '0.0.0.0';
+  await app.listen(port, host);
+  const publicHost = host === '0.0.0.0' ? 'localhost' : host;
+  console.log(`Application is running on: http://${publicHost}:${port}`);
+  console.log(`Swagger UI is available at: http://${publicHost}:${port}/docs`);
 }
 void bootstrap();
