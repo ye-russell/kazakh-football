@@ -1,4 +1,4 @@
-import { PrismaClient, MatchStatus } from '@prisma/client';
+import { PrismaClient, MatchStatus, MatchEventType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -142,6 +142,24 @@ async function main() {
 
   console.log(`✓ ${teams.length} teams created`);
 
+  // Cleanup players and events for seeded teams/matches to avoid duplicates
+  await prisma.matchEvent.deleteMany({
+    where: {
+      match: {
+        competitionId: kpl.id,
+        round: 1,
+      },
+    },
+  });
+
+  await prisma.player.deleteMany({
+    where: {
+      teamId: {
+        in: teams.map((team) => team.id),
+      },
+    },
+  });
+
   // Delete existing matches for round 1 to avoid duplicates
   await prisma.match.deleteMany({
     where: {
@@ -232,6 +250,130 @@ async function main() {
   ]);
 
   console.log(`✓ ${matches.length} matches created for KPL Round 1`);
+
+  // Create players
+  const playersByTeam = new Map<string, { id: string; name: string }[]>();
+  const playerTemplates = [
+    { name: 'Ayan', position: 'FW' },
+    { name: 'Daniyar', position: 'MF' },
+    { name: 'Ruslan', position: 'DF' },
+    { name: 'Sultan', position: 'GK' },
+  ];
+
+  for (const team of teams) {
+    const createdPlayers = await Promise.all(
+      playerTemplates.map((template, index) =>
+        prisma.player.create({
+          data: {
+            teamId: team.id,
+            name: `${template.name} ${team.shortName}`,
+            number: 7 + index,
+            position: template.position,
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        })
+      )
+    );
+
+    playersByTeam.set(team.id, createdPlayers);
+  }
+
+  console.log('✓ Players created');
+
+  // Create match events for finished matches
+  const [match1, match2, match3] = matches.slice(0, 3);
+
+  const matchEvents = [
+    // Match 1: Astana 2-1 Kairat
+    {
+      matchId: match1.id,
+      teamId: match1.homeTeamId,
+      playerId: playersByTeam.get(match1.homeTeamId)![0].id,
+      type: MatchEventType.goal,
+      minute: 12,
+    },
+    {
+      matchId: match1.id,
+      teamId: match1.awayTeamId,
+      playerId: playersByTeam.get(match1.awayTeamId)![1].id,
+      type: MatchEventType.goal,
+      minute: 41,
+    },
+    {
+      matchId: match1.id,
+      teamId: match1.homeTeamId,
+      playerId: playersByTeam.get(match1.homeTeamId)![2].id,
+      type: MatchEventType.yellow_card,
+      minute: 58,
+    },
+    {
+      matchId: match1.id,
+      teamId: match1.homeTeamId,
+      playerId: playersByTeam.get(match1.homeTeamId)![0].id,
+      type: MatchEventType.goal,
+      minute: 76,
+    },
+    // Match 2: Tobol 1-1 Aktobe
+    {
+      matchId: match2.id,
+      teamId: match2.homeTeamId,
+      playerId: playersByTeam.get(match2.homeTeamId)![1].id,
+      type: MatchEventType.goal,
+      minute: 33,
+    },
+    {
+      matchId: match2.id,
+      teamId: match2.awayTeamId,
+      playerId: playersByTeam.get(match2.awayTeamId)![0].id,
+      type: MatchEventType.goal,
+      minute: 69,
+    },
+    {
+      matchId: match2.id,
+      teamId: match2.awayTeamId,
+      playerId: playersByTeam.get(match2.awayTeamId)![2].id,
+      type: MatchEventType.yellow_card,
+      minute: 80,
+    },
+    // Match 3: Ordabasy 3-0 Shakhter
+    {
+      matchId: match3.id,
+      teamId: match3.homeTeamId,
+      playerId: playersByTeam.get(match3.homeTeamId)![0].id,
+      type: MatchEventType.goal,
+      minute: 9,
+    },
+    {
+      matchId: match3.id,
+      teamId: match3.homeTeamId,
+      playerId: playersByTeam.get(match3.homeTeamId)![1].id,
+      type: MatchEventType.goal,
+      minute: 52,
+    },
+    {
+      matchId: match3.id,
+      teamId: match3.homeTeamId,
+      playerId: playersByTeam.get(match3.homeTeamId)![0].id,
+      type: MatchEventType.goal,
+      minute: 88,
+    },
+    {
+      matchId: match3.id,
+      teamId: match3.awayTeamId,
+      playerId: playersByTeam.get(match3.awayTeamId)![3].id,
+      type: MatchEventType.red_card,
+      minute: 63,
+    },
+  ];
+
+  await prisma.matchEvent.createMany({
+    data: matchEvents,
+  });
+
+  console.log('✓ Match events created');
   console.log('Seed completed successfully!');
 }
 

@@ -221,19 +221,20 @@ API is designed so that:
 - ✅ CORS enabled for frontend integration
 - ⚠️ Missing matchweek metadata (max round) for frontend matchweek selector
 
-Frontend can now safely start.
+Frontend is now implemented with a responsive UI and basic functionality, using the stable API.
 
-### Planned frontend stack
+### Frontend stack (current)
 - Angular (latest stable)
 - Standalone components
 - Signals
 - PWA
 - Capacitor for Android/iOS
 
-### Initial frontend features (implemented)
-- App shell + routing skeleton
+### Frontend features (implemented)
+- App shell + routing
 - Environment config for API base URL
 - API client + domain services
+- Responsive layout (mobile-first)
 - Home page (matchweek fixtures, standings snapshot, quick links, stats placeholder)
 - Standings page
 - Matches list with matchweek navigation
@@ -285,7 +286,7 @@ Long-term:
 
 ## 15. Current State Summary
 
-The project has successfully transitioned from idea to a **working backend platform**. The hardest technical risks (DB, schema, migrations, connectivity) are resolved. The system is now stable enough to support frontend development without rework.
+The project has successfully transitioned from idea to a **working backend platform** and a **functional, responsive web frontend**. The hardest technical risks (DB, schema, migrations, connectivity) are resolved. The system now provides a usable UI for core browsing flows.
 
-The next logical phase is **frontend implementation**, not more backend plumbing.
+The next logical phase is **frontend polish + product depth** (live updates, matchweek metadata, UX refinements), not more backend plumbing.
 

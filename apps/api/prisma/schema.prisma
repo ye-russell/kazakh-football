@@ -8,12 +8,19 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum MatchStatus {
   scheduled
   live
   finished
+}
+
+enum MatchEventType {
+  goal
+  yellow_card
+  red_card
 }
 
 model Competition {
@@ -36,6 +43,8 @@ model Team {
   updatedAt  DateTime @updatedAt
   homeMatches Match[] @relation("HomeTeam")
   awayMatches Match[] @relation("AwayTeam")
+  players     Player[]
+  matchEvents MatchEvent[]
 }
 
 model Match {
@@ -53,10 +62,44 @@ model Match {
   awayScore     Int?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  events        MatchEvent[]
 
   @@index([competitionId, round])
   @@index([competitionId, kickoffAt])
   @@index([status])
   @@index([homeTeamId])
   @@index([awayTeamId])
+}
+
+model Player {
+  id        String   @id @default(uuid())
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  name      String
+  number    Int?
+  position  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  events    MatchEvent[]
+
+  @@index([teamId])
+  @@index([name])
+}
+
+model MatchEvent {
+  id        String         @id @default(uuid())
+  matchId   String
+  match     Match          @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  teamId    String
+  team      Team           @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  playerId  String
+  player    Player         @relation(fields: [playerId], references: [id], onDelete: Restrict)
+  type      MatchEventType
+  minute    Int
+  createdAt DateTime       @default(now())
+
+  @@index([matchId])
+  @@index([teamId])
+  @@index([playerId])
+  @@index([type])
 }

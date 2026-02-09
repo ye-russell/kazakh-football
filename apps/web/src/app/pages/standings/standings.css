@@ -42,6 +42,50 @@ h1 {
   overflow: hidden;
 }
 
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.legend-dot.win {
+  background-color: #1fa983;
+  border-color: #1fa983;
+}
+
+.legend-dot.draw {
+  background-color: #f7b84b;
+  border-color: #f7b84b;
+}
+
+.legend-dot.loss {
+  background-color: #e5484d;
+  border-color: #e5484d;
+}
+
+.legend-dot.none {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
 .standings-table thead {
   background-color: var(--color-primary);
   color: white;
@@ -77,9 +121,72 @@ h1 {
   background-color: var(--color-surface);
 }
 
+.standings-table td.position-change {
+  text-align: center;
+  width: 64px;
+}
+
+.change {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.change.up {
+  color: #1fa983;
+}
+
+.change.down {
+  color: #e5484d;
+}
+
+.change.same,
+.change.none {
+  color: var(--color-muted);
+}
+
 .standings-table td.team-name {
   font-weight: 500;
   color: var(--color-text);
+}
+
+.standings-table td.last-result {
+  text-align: center;
+  width: 130px;
+}
+
+.form-dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.form-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.form-dot.win {
+  background-color: #1fa983;
+  border-color: #1fa983;
+}
+
+.form-dot.draw {
+  background-color: #f7b84b;
+  border-color: #f7b84b;
+}
+
+.form-dot.loss {
+  background-color: #e5484d;
+  border-color: #e5484d;
+}
+
+.form-dot.none {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
 }
 
 .team-link {
@@ -109,11 +216,11 @@ h1 {
 }
 
 /* Center align numeric columns */
-.standings-table td:nth-child(n + 3) {
+.standings-table td:nth-child(n + 4) {
   text-align: center;
 }
 
-.standings-table th:nth-child(n + 3) {
+.standings-table th:nth-child(n + 4) {
   text-align: center;
 }
 

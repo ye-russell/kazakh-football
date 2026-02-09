@@ -75,6 +75,30 @@ export class MatchesService {
             shortName: true,
           },
         },
+        events: {
+          orderBy: {
+            minute: 'asc',
+          },
+          select: {
+            id: true,
+            minute: true,
+            type: true,
+            player: {
+              select: {
+                id: true,
+                name: true,
+                number: true,
+              },
+            },
+            team: {
+              select: {
+                id: true,
+                name: true,
+                shortName: true,
+              },
+            },
+          },
+        },
       },
     });
 

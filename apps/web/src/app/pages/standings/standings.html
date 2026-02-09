@@ -10,11 +10,32 @@
   }
 
   @if (!loading() && !error() && standingsWithPosition().length > 0) {
+    <div class="legend" aria-label="Form legend">
+      <span class="legend-item">
+        <span class="legend-dot win" aria-hidden="true"></span>
+        Win
+      </span>
+      <span class="legend-item">
+        <span class="legend-dot draw" aria-hidden="true"></span>
+        Draw
+      </span>
+      <span class="legend-item">
+        <span class="legend-dot loss" aria-hidden="true"></span>
+        Loss
+      </span>
+      <span class="legend-item">
+        <span class="legend-dot none" aria-hidden="true"></span>
+        No match
+      </span>
+    </div>
+
     <table class="standings-table">
       <thead>
         <tr>
           <th>Rank</th>
+          <th>Δ</th>
           <th>Team</th>
+          <th>Form (Last 5)</th>
           <th>P</th>
           <th>W</th>
           <th>D</th>
@@ -29,8 +50,41 @@
         @for (row of standingsWithPosition(); track row.team.id) {
           <tr>
             <td class="position">{{ row.position }}</td>
+            <td class="position-change">
+              @if (row.positionChange === null) {
+                <span class="change none" aria-label="No previous round">–</span>
+              }
+              @if (row.positionChange !== null && row.positionChange > 0) {
+                <span class="change up" [attr.aria-label]="'Up ' + row.positionChange">
+                  ▲ {{ row.positionChange }}
+                </span>
+              }
+              @if (row.positionChange !== null && row.positionChange < 0) {
+                <span class="change down" [attr.aria-label]="'Down ' + (row.positionChange * -1)">
+                  ▼ {{ row.positionChange * -1 }}
+                </span>
+              }
+              @if (row.positionChange !== null && row.positionChange === 0) {
+                <span class="change same" aria-label="No change">–</span>
+              }
+            </td>
             <td class="team-name">
               <span class="team-link">{{ row.team.name }}</span>
+            </td>
+            <td class="last-result" aria-label="Last five match results">
+              <div class="form-dots" role="group">
+                @for (result of row.lastFive; track $index) {
+                  <span
+                    class="form-dot"
+                    [class.win]="result === 'W'"
+                    [class.draw]="result === 'D'"
+                    [class.loss]="result === 'L'"
+                    [class.none]="result === '—'"
+                    [attr.aria-label]="result"
+                    role="img"
+                  ></span>
+                }
+              </div>
             </td>
             <td>{{ row.played }}</td>
             <td>{{ row.wins }}</td>

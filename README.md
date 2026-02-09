@@ -1,6 +1,6 @@
 # Kazakh Football
 
-**Kazakh Football** is an independent, community-driven platform that provides structured football data and news aggregation for Kazakhstan football competitions.
+**Kazakh Football** is an independent, community-driven platform that provides structured football data and a modern web experience for Kazakhstan football competitions.
 
 The project starts with a **clean, reliable data layer** (fixtures, results, standings) and is designed to evolve into a **full football hub** including news aggregation, notifications, and fantasy features.
 
@@ -29,9 +29,10 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 
 ### MVP features
 - League metadata (season, competitions)
-- Teams
-- Matches (by competition and round)
+- Teams and team detail pages
+- Matches (by competition and round) + match detail page
 - Automatically computed standings
+- Responsive web UI with core navigation and layouts
 
 ❌ No authentication  
 ❌ No write endpoints  
@@ -69,6 +70,7 @@ Angular / PWA / Mobile
 - Angular (latest stable)
 - Standalone components
 - Signals for state management
+- Responsive layout (mobile-first)
 - PWA
 - Capacitor (Android / iOS)
 
@@ -151,14 +153,14 @@ pnpm install
 
 ### Backend (apps/api)
 ```bash
-pnpm --filter api prisma migrate dev
-pnpm --filter api prisma db seed
-pnpm --filter api dev
+pnpm --filter api prisma:migrate
+pnpm --filter api prisma:seed
+pnpm --filter api start:dev
 ```
 
 ### Frontend (apps/web)
 ```bash
-pnpm --filter web dev
+pnpm --filter web start
 ```
 
 ### Environment variables
@@ -177,9 +179,10 @@ http://localhost:3000/docs
 
 ## 🛣 Roadmap
 
-### Phase 1 — Data Platform (current)
+### Phase 1 — Data Platform + Web MVP (current)
 - Stable API
 - Standings computation
+- Responsive web UI
 - Public release
 
 ### Phase 2 — News Aggregation
