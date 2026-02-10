@@ -75,6 +75,27 @@ export class MatchesService {
             shortName: true,
           },
         },
+        lineups: {
+          select: {
+            id: true,
+            isStarter: true,
+            position: true,
+            team: {
+              select: {
+                id: true,
+                name: true,
+                shortName: true,
+              },
+            },
+            player: {
+              select: {
+                id: true,
+                name: true,
+                number: true,
+              },
+            },
+          },
+        },
         events: {
           orderBy: {
             minute: 'asc',
@@ -82,8 +103,30 @@ export class MatchesService {
           select: {
             id: true,
             minute: true,
+            extraMinute: true,
             type: true,
             player: {
+              select: {
+                id: true,
+                name: true,
+                number: true,
+              },
+            },
+            assistPlayer: {
+              select: {
+                id: true,
+                name: true,
+                number: true,
+              },
+            },
+            subInPlayer: {
+              select: {
+                id: true,
+                name: true,
+                number: true,
+              },
+            },
+            subOutPlayer: {
               select: {
                 id: true,
                 name: true,

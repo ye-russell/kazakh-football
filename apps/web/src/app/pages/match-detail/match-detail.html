@@ -48,5 +48,141 @@
         <span class="value">{{ match.competition?.code || '-' }}</span>
       </div>
     </section>
+
+    <section class="lineups">
+      <div class="section-header">
+        <h2>Starting XI & Bench</h2>
+      </div>
+
+      <div class="lineup-grid">
+        <div class="lineup-column">
+          <h3>{{ match.homeTeam.name }}</h3>
+          <div class="lineup-group">
+            <div class="lineup-title">Starters</div>
+            @if (lineupsByTeam().home.starters.length > 0) {
+              <ul class="lineup-list">
+                @for (player of lineupsByTeam().home.starters; track player.id) {
+                  <li>
+                    <span class="player-number">
+                      {{ player.player.number || '-' }}
+                    </span>
+                    <span class="player-name">{{ player.player.name }}</span>
+                    <span class="player-position">{{ player.position || '-' }}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <div class="empty">No lineup data</div>
+            }
+          </div>
+
+          <div class="lineup-group">
+            <div class="lineup-title">Bench</div>
+            @if (lineupsByTeam().home.bench.length > 0) {
+              <ul class="lineup-list">
+                @for (player of lineupsByTeam().home.bench; track player.id) {
+                  <li>
+                    <span class="player-number">
+                      {{ player.player.number || '-' }}
+                    </span>
+                    <span class="player-name">{{ player.player.name }}</span>
+                    <span class="player-position">{{ player.position || '-' }}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <div class="empty">No bench data</div>
+            }
+          </div>
+        </div>
+
+        <div class="lineup-column">
+          <h3>{{ match.awayTeam.name }}</h3>
+          <div class="lineup-group">
+            <div class="lineup-title">Starters</div>
+            @if (lineupsByTeam().away.starters.length > 0) {
+              <ul class="lineup-list">
+                @for (player of lineupsByTeam().away.starters; track player.id) {
+                  <li>
+                    <span class="player-number">
+                      {{ player.player.number || '-' }}
+                    </span>
+                    <span class="player-name">{{ player.player.name }}</span>
+                    <span class="player-position">{{ player.position || '-' }}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <div class="empty">No lineup data</div>
+            }
+          </div>
+
+          <div class="lineup-group">
+            <div class="lineup-title">Bench</div>
+            @if (lineupsByTeam().away.bench.length > 0) {
+              <ul class="lineup-list">
+                @for (player of lineupsByTeam().away.bench; track player.id) {
+                  <li>
+                    <span class="player-number">
+                      {{ player.player.number || '-' }}
+                    </span>
+                    <span class="player-name">{{ player.player.name }}</span>
+                    <span class="player-position">{{ player.position || '-' }}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <div class="empty">No bench data</div>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="events">
+      <div class="section-header">
+        <h2>Match Events</h2>
+      </div>
+
+      <div class="events-grid">
+        <div class="events-column">
+          <h3>{{ match.homeTeam.name }}</h3>
+          @if (eventsByTeam().home.length > 0) {
+            <ul class="events-list">
+              @for (event of eventsByTeam().home; track event.id) {
+                <li>
+                  <span class="event-minute">{{ getEventMinute(event) }}</span>
+                  <span class="event-type" [class]="'event-type ' + event.type">
+                    {{ getEventLabel(event) }}
+                  </span>
+                  <span class="event-detail">{{ getEventDetail(event) }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <div class="empty">No events yet</div>
+          }
+        </div>
+
+        <div class="events-column">
+          <h3>{{ match.awayTeam.name }}</h3>
+          @if (eventsByTeam().away.length > 0) {
+            <ul class="events-list">
+              @for (event of eventsByTeam().away; track event.id) {
+                <li>
+                  <span class="event-minute">{{ getEventMinute(event) }}</span>
+                  <span class="event-type" [class]="'event-type ' + event.type">
+                    {{ getEventLabel(event) }}
+                  </span>
+                  <span class="event-detail">{{ getEventDetail(event) }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <div class="empty">No events yet</div>
+          }
+        </div>
+      </div>
+    </section>
   }
 </div>

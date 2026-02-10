@@ -21,6 +21,7 @@ enum MatchEventType {
   goal
   yellow_card
   red_card
+  substitution
 }
 
 model Competition {
@@ -45,6 +46,7 @@ model Team {
   awayMatches Match[] @relation("AwayTeam")
   players     Player[]
   matchEvents MatchEvent[]
+  matchLineups MatchLineup[]
 }
 
 model Match {
@@ -63,6 +65,7 @@ model Match {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   events        MatchEvent[]
+  lineups       MatchLineup[]
 
   @@index([competitionId, round])
   @@index([competitionId, kickoffAt])
@@ -80,7 +83,11 @@ model Player {
   position  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  events    MatchEvent[]
+  events    MatchEvent[] @relation("EventPlayer")
+  assists   MatchEvent[] @relation("EventAssistPlayer")
+  subIns    MatchEvent[] @relation("EventSubInPlayer")
+  subOuts   MatchEvent[] @relation("EventSubOutPlayer")
+  lineups   MatchLineup[]
 
   @@index([teamId])
   @@index([name])
@@ -93,13 +100,41 @@ model MatchEvent {
   teamId    String
   team      Team           @relation(fields: [teamId], references: [id], onDelete: Restrict)
   playerId  String
-  player    Player         @relation(fields: [playerId], references: [id], onDelete: Restrict)
+  player    Player         @relation("EventPlayer", fields: [playerId], references: [id], onDelete: Restrict)
+  assistPlayerId String?
+  assistPlayer   Player?        @relation("EventAssistPlayer", fields: [assistPlayerId], references: [id], onDelete: Restrict)
+  subInPlayerId  String?
+  subInPlayer    Player?        @relation("EventSubInPlayer", fields: [subInPlayerId], references: [id], onDelete: Restrict)
+  subOutPlayerId String?
+  subOutPlayer   Player?        @relation("EventSubOutPlayer", fields: [subOutPlayerId], references: [id], onDelete: Restrict)
   type      MatchEventType
   minute    Int
+  extraMinute Int?
   createdAt DateTime       @default(now())
 
   @@index([matchId])
   @@index([teamId])
   @@index([playerId])
+  @@index([assistPlayerId])
+  @@index([subInPlayerId])
+  @@index([subOutPlayerId])
   @@index([type])
+}
+
+model MatchLineup {
+  id        String   @id @default(uuid())
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  playerId  String
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Restrict)
+  isStarter Boolean  @default(false)
+  position  String?
+  createdAt DateTime @default(now())
+
+  @@unique([matchId, playerId])
+  @@index([matchId])
+  @@index([teamId])
+  @@index([playerId])
 }

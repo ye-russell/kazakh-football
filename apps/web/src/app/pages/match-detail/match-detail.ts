@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatchesService } from '../../shared/services/matches.service';
-import { Match } from '../../shared/interfaces/api.interfaces';
+import { Match, MatchEvent, MatchLineup } from '../../shared/interfaces/api.interfaces';
 
 @Component({
   selector: 'app-match-detail',
@@ -41,6 +41,42 @@ export class MatchDetail implements OnInit {
       return '-';
     }
     return `${match.homeScore} - ${match.awayScore}`;
+  });
+
+  protected readonly eventsByTeam = computed(() => {
+    const match = this.match();
+    if (!match?.events?.length) {
+      return { home: [] as MatchEvent[], away: [] as MatchEvent[] };
+    }
+
+    return {
+      home: match.events.filter((event) => event.team.id === match.homeTeam.id),
+      away: match.events.filter((event) => event.team.id === match.awayTeam.id),
+    };
+  });
+
+  protected readonly lineupsByTeam = computed(() => {
+    const match = this.match();
+    if (!match?.lineups?.length) {
+      return {
+        home: { starters: [] as MatchLineup[], bench: [] as MatchLineup[] },
+        away: { starters: [] as MatchLineup[], bench: [] as MatchLineup[] },
+      };
+    }
+
+    const homeLineups = match.lineups.filter((lineup) => lineup.team.id === match.homeTeam.id);
+    const awayLineups = match.lineups.filter((lineup) => lineup.team.id === match.awayTeam.id);
+
+    return {
+      home: {
+        starters: homeLineups.filter((lineup) => lineup.isStarter),
+        bench: homeLineups.filter((lineup) => !lineup.isStarter),
+      },
+      away: {
+        starters: awayLineups.filter((lineup) => lineup.isStarter),
+        bench: awayLineups.filter((lineup) => !lineup.isStarter),
+      },
+    };
   });
 
   ngOnInit() {
@@ -103,6 +139,43 @@ export class MatchDetail implements OnInit {
   getBackQueryParams() {
     const round = this.roundQueryParam();
     return round ? { round } : null;
+  }
+
+  getEventMinute(event: MatchEvent): string {
+    if (event.extraMinute) {
+      return `${event.minute}+${event.extraMinute}'`;
+    }
+    return `${event.minute}'`;
+  }
+
+  getEventLabel(event: MatchEvent): string {
+    switch (event.type) {
+      case 'goal':
+        return 'Goal';
+      case 'yellow_card':
+        return 'Yellow card';
+      case 'red_card':
+        return 'Red card';
+      case 'substitution':
+        return 'Substitution';
+      default:
+        return event.type;
+    }
+  }
+
+  getEventDetail(event: MatchEvent): string {
+    if (event.type === 'goal') {
+      const assist = event.assistPlayer ? ` (assist ${event.assistPlayer.name})` : '';
+      return `${event.player.name}${assist}`;
+    }
+
+    if (event.type === 'substitution') {
+      const subIn = event.subInPlayer ? event.subInPlayer.name : 'Sub in';
+      const subOut = event.subOutPlayer ? event.subOutPlayer.name : 'Sub out';
+      return `${subIn} ⇄ ${subOut}`;
+    }
+
+    return event.player.name;
   }
 
   private formatKickoffDate(kickoffAt: string): string {

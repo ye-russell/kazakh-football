@@ -146,6 +146,153 @@
   border: 1px solid var(--color-border);
 }
 
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+
+.lineups,
+.events {
+  margin-top: 1.5rem;
+}
+
+.lineup-grid,
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.lineup-column,
+.events-column {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.lineup-column h3,
+.events-column h3 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+
+.lineup-group {
+  margin-bottom: 1rem;
+}
+
+.lineup-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-subtle);
+  margin-bottom: 0.5rem;
+}
+
+.lineup-list,
+.events-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lineup-list li,
+.events-list li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.player-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.player-name {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.player-position {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+}
+
+.events-list li {
+  grid-template-columns: auto auto 1fr;
+}
+
+.event-minute {
+  font-weight: 600;
+  color: var(--color-text);
+  min-width: 52px;
+}
+
+.event-type {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background-color: var(--color-surface);
+  color: var(--color-muted);
+}
+
+.event-type.goal {
+  background-color: rgba(31, 169, 131, 0.15);
+  color: var(--color-primary);
+}
+
+.event-type.yellow_card {
+  background-color: rgba(247, 184, 75, 0.2);
+  color: #b36a00;
+}
+
+.event-type.red_card {
+  background-color: rgba(229, 72, 77, 0.15);
+  color: #b12b2b;
+}
+
+.event-type.substitution {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #1d4ed8;
+}
+
+.event-detail {
+  color: var(--color-text);
+}
+
+.empty {
+  padding: 0.75rem 1rem;
+  background-color: var(--color-surface);
+  border-radius: 6px;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
 .meta-item {
   display: flex;
   flex-direction: column;
@@ -180,6 +327,11 @@
   .match-meta {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .lineup-grid,
+  .events-grid {
+    grid-template-columns: 1fr;
   }
 }
 

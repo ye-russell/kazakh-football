@@ -52,6 +52,50 @@ export interface Match {
   awayTeam: TeamBasic;
   homeScore?: number | null;
   awayScore?: number | null;
+  events?: MatchEvent[];
+  lineups?: MatchLineup[];
+}
+
+export type MatchEventType = 'goal' | 'yellow_card' | 'red_card' | 'substitution';
+
+export interface MatchEvent {
+  id: string;
+  minute: number;
+  extraMinute?: number | null;
+  type: MatchEventType;
+  player: {
+    id: string;
+    name: string;
+    number?: number | null;
+  };
+  assistPlayer?: {
+    id: string;
+    name: string;
+    number?: number | null;
+  } | null;
+  subInPlayer?: {
+    id: string;
+    name: string;
+    number?: number | null;
+  } | null;
+  subOutPlayer?: {
+    id: string;
+    name: string;
+    number?: number | null;
+  } | null;
+  team: TeamBasic;
+}
+
+export interface MatchLineup {
+  id: string;
+  isStarter: boolean;
+  position?: string | null;
+  team: TeamBasic;
+  player: {
+    id: string;
+    name: string;
+    number?: number | null;
+  };
 }
 
 /**

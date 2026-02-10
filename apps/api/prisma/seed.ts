@@ -1,6 +1,12 @@
 import { PrismaClient, MatchStatus, MatchEventType } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
+    },
+  },
+});
 
 async function main() {
   console.log('Starting seed...');
@@ -152,6 +158,15 @@ async function main() {
     },
   });
 
+  await prisma.matchLineup.deleteMany({
+    where: {
+      match: {
+        competitionId: kpl.id,
+        round: 1,
+      },
+    },
+  });
+
   await prisma.player.deleteMany({
     where: {
       teamId: {
@@ -286,12 +301,44 @@ async function main() {
   // Create match events for finished matches
   const [match1, match2, match3] = matches.slice(0, 3);
 
+  // Create lineups (simple 3 starters + 1 bench per team)
+  const lineupEntries = [
+    match1,
+    match2,
+  ].flatMap((match) => {
+    const homePlayers = playersByTeam.get(match.homeTeamId)!;
+    const awayPlayers = playersByTeam.get(match.awayTeamId)!;
+    return [
+      ...homePlayers.map((player, index) => ({
+        matchId: match.id,
+        teamId: match.homeTeamId,
+        playerId: player.id,
+        isStarter: index < 3,
+        position: index === 0 ? 'FW' : index === 1 ? 'MF' : index === 2 ? 'DF' : 'GK',
+      })),
+      ...awayPlayers.map((player, index) => ({
+        matchId: match.id,
+        teamId: match.awayTeamId,
+        playerId: player.id,
+        isStarter: index < 3,
+        position: index === 0 ? 'FW' : index === 1 ? 'MF' : index === 2 ? 'DF' : 'GK',
+      })),
+    ];
+  });
+
+  await prisma.matchLineup.createMany({
+    data: lineupEntries,
+  });
+
+  console.log('✓ Match lineups created');
+
   const matchEvents = [
     // Match 1: Astana 2-1 Kairat
     {
       matchId: match1.id,
       teamId: match1.homeTeamId,
       playerId: playersByTeam.get(match1.homeTeamId)![0].id,
+      assistPlayerId: playersByTeam.get(match1.homeTeamId)![1].id,
       type: MatchEventType.goal,
       minute: 12,
     },
@@ -306,6 +353,15 @@ async function main() {
       matchId: match1.id,
       teamId: match1.homeTeamId,
       playerId: playersByTeam.get(match1.homeTeamId)![2].id,
+      subInPlayerId: playersByTeam.get(match1.homeTeamId)![3].id,
+      subOutPlayerId: playersByTeam.get(match1.homeTeamId)![2].id,
+      type: MatchEventType.substitution,
+      minute: 55,
+    },
+    {
+      matchId: match1.id,
+      teamId: match1.homeTeamId,
+      playerId: playersByTeam.get(match1.homeTeamId)![2].id,
       type: MatchEventType.yellow_card,
       minute: 58,
     },
@@ -313,6 +369,7 @@ async function main() {
       matchId: match1.id,
       teamId: match1.homeTeamId,
       playerId: playersByTeam.get(match1.homeTeamId)![0].id,
+      assistPlayerId: playersByTeam.get(match1.homeTeamId)![3].id,
       type: MatchEventType.goal,
       minute: 76,
     },
@@ -321,6 +378,7 @@ async function main() {
       matchId: match2.id,
       teamId: match2.homeTeamId,
       playerId: playersByTeam.get(match2.homeTeamId)![1].id,
+      assistPlayerId: playersByTeam.get(match2.homeTeamId)![0].id,
       type: MatchEventType.goal,
       minute: 33,
     },
@@ -335,6 +393,15 @@ async function main() {
       matchId: match2.id,
       teamId: match2.awayTeamId,
       playerId: playersByTeam.get(match2.awayTeamId)![2].id,
+      subInPlayerId: playersByTeam.get(match2.awayTeamId)![3].id,
+      subOutPlayerId: playersByTeam.get(match2.awayTeamId)![2].id,
+      type: MatchEventType.substitution,
+      minute: 74,
+    },
+    {
+      matchId: match2.id,
+      teamId: match2.awayTeamId,
+      playerId: playersByTeam.get(match2.awayTeamId)![2].id,
       type: MatchEventType.yellow_card,
       minute: 80,
     },
@@ -343,6 +410,7 @@ async function main() {
       matchId: match3.id,
       teamId: match3.homeTeamId,
       playerId: playersByTeam.get(match3.homeTeamId)![0].id,
+      assistPlayerId: playersByTeam.get(match3.homeTeamId)![1].id,
       type: MatchEventType.goal,
       minute: 9,
     },
@@ -352,6 +420,7 @@ async function main() {
       playerId: playersByTeam.get(match3.homeTeamId)![1].id,
       type: MatchEventType.goal,
       minute: 52,
+      extraMinute: 1,
     },
     {
       matchId: match3.id,
