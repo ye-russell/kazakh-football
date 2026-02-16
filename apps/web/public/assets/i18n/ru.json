@@ -1,0 +1,118 @@
+{
+  "app": {
+    "title": "Казахский Футбол",
+    "description": "Премьер-Лига Казахстана"
+  },
+  "home": {
+    "noStandingsAvailable": "Таблица недоступна",
+    "quickLinks": {
+      "title": "Быстрые ссылки",
+      "teamsTitle": "Команды",
+      "teamsSubtitle": "Все клубы КПЛ",
+      "matchesTitle": "Матчи",
+      "matchesSubtitle": "Календарь и результаты",
+      "tableTitle": "Таблица",
+      "tableSubtitle": "Полная турнирная таблица"
+    },
+    "stats": {
+      "title": "Статистика",
+      "comingSoon": "Скоро",
+      "description": "Лучшие бомбардиры, форма и статистика команд."
+    }
+  },
+  "nav": {
+    "home": "Главная",
+    "matches": "Матчи",
+    "standings": "Таблица",
+    "teams": "Команды"
+  },
+  "matchweek": {
+    "label": "Тур",
+    "previous": "Предыдущий",
+    "next": "Следующий"
+  },
+  "matches": {
+    "title": "Матчи",
+    "loading": "Загрузка матчей...",
+    "error": "Не удалось загрузить матчи",
+    "noMatches": "Матчей не найдено",
+    "noMatchesInRound": "На этот тур матчи не запланированы",
+    "time": "Время",
+    "score": "Счет",
+    "status": {
+      "scheduled": "Предстоит",
+      "live": "Идет",
+      "finished": "Завершен"
+    }
+  },
+  "standings": {
+    "title": "Таблица",
+    "loading": "Загрузка таблицы...",
+    "error": "Не удалось загрузить таблицу",
+    "position": "Место",
+    "team": "Команда",
+    "played": "И",
+    "won": "В",
+    "drawn": "Н",
+    "lost": "П",
+    "goalsFor": "ЗБ",
+    "goalsAgainst": "ПБ",
+    "goalDifference": "РБ",
+    "points": "Очки",
+    "form": "Последние 5",
+    "legend": {
+      "win": "Победа",
+      "draw": "Ничья",
+      "loss": "Поражение",
+      "noMatch": "Нет матча"
+    }
+  },
+  "matchDetail": {
+    "title": "Детали Матча",
+    "loading": "Загрузка матча...",
+    "error": "Не удалось загрузить матч",
+    "backToMatches": "Назад к матчам",
+    "lineup": "Состав",
+    "bench": "Запас",
+    "events": "События",
+    "noEvents": "Событий не записано",
+    "noLineupData": "Нет данных по составу",
+    "noBenchData": "Нет данных по запасным",
+    "startingXI": "Основной состав",
+    "round": "Тур",
+    "competition": "Турнир",
+    "substitution": "Замена",
+    "goal": "Гол",
+    "yellowCard": "Желтая карточка",
+    "redCard": "Красная карточка",
+    "assist": "Ассист",
+    "substitutedOut": "Заменен"
+  },
+  "teams": {
+    "title": "Команды",
+    "loading": "Загрузка команд...",
+    "error": "Не удалось загрузить команды",
+    "search": "Поиск команд",
+    "noTeamsFound": "Команды не найдены",
+    "players": "Игроки",
+    "position": "Позиция"
+  },
+  "teamDetail": {
+    "backToTeams": "Назад к командам",
+    "loading": "Загрузка команды...",
+    "recentMatches": "Последние матчи",
+    "noMatchesFound": "Матчи не найдены",
+    "teamStats": "Статистика команды",
+    "teamStatsPlaceholder": "Раздел статистики будет добавлен позже.",
+    "squad": "Состав",
+    "squadPlaceholder": "Раздел состава будет добавлен позже."
+  },
+  "competitions": {
+    "kpl": "Премьер-Лига Казахстана",
+    "first": "Первая лига"
+  },
+  "health": {
+    "status": "Статус",
+    "healthy": "Работает"
+  }
+}

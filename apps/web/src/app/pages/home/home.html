@@ -1,12 +1,12 @@
 <div class="home">
-  <h1>Kazakh Football</h1>
-  <p class="subtitle">Kazakhstan Premier League</p>
+  <h1>{{ 'app.title' | translate }}</h1>
+  <p class="subtitle">{{ 'app.description' | translate }}</p>
 
   <div class="home-grid">
     <section class="card matchweek-card">
       <div class="card-header">
-        <h2>This Matchweek</h2>
-        <button class="link-button" (click)="viewAllMatches()">View all</button>
+        <h2>{{ 'matchweek.label' | translate }}</h2>
+        <button class="link-button" (click)="viewAllMatches()">{{ 'matches.title' | translate }}</button>
       </div>
 
       <app-matchweek-selector
@@ -25,12 +25,12 @@
 
     <section class="card standings-card">
       <div class="card-header">
-        <h2>Standings Snapshot</h2>
-        <a class="link-button" [routerLink]="['/standings']">View full table</a>
+        <h2>{{ 'standings.title' | translate }}</h2>
+        <a class="link-button" [routerLink]="['/standings']">{{ 'standings.title' | translate }}</a>
       </div>
 
       @if (standingsLoading()) {
-        <div class="loading">Loading standings...</div>
+        <div class="loading">{{ 'standings.loading' | translate }}</div>
       }
 
       @if (standingsError()) {
@@ -43,40 +43,40 @@
             <div class="standings-row">
               <div class="rank">{{ index + 1 }}</div>
               <div class="team">{{ row.team.name }}</div>
-              <div class="points">{{ row.points }} pts</div>
+              <div class="points">{{ row.points }} {{ 'standings.points' | translate }}</div>
             </div>
           }
         </div>
       }
 
       @if (!standingsLoading() && !standingsError() && topStandings().length === 0) {
-        <div class="no-data">No standings available</div>
+        <div class="no-data">{{ 'home.noStandingsAvailable' | translate }}</div>
       }
     </section>
 
     <section class="card quick-links-card">
-      <h2>Quick Links</h2>
+      <h2>{{ 'home.quickLinks.title' | translate }}</h2>
       <div class="quick-links">
         <a class="quick-link" [routerLink]="['/teams']">
-          <span class="title">Teams</span>
-          <span class="subtitle">All KPL clubs</span>
+          <span class="title">{{ 'home.quickLinks.teamsTitle' | translate }}</span>
+          <span class="subtitle">{{ 'home.quickLinks.teamsSubtitle' | translate }}</span>
         </a>
         <a class="quick-link" [routerLink]="['/matches']">
-          <span class="title">Matches</span>
-          <span class="subtitle">Fixtures & results</span>
+          <span class="title">{{ 'home.quickLinks.matchesTitle' | translate }}</span>
+          <span class="subtitle">{{ 'home.quickLinks.matchesSubtitle' | translate }}</span>
         </a>
         <a class="quick-link" [routerLink]="['/standings']">
-          <span class="title">Table</span>
-          <span class="subtitle">Full standings</span>
+          <span class="title">{{ 'home.quickLinks.tableTitle' | translate }}</span>
+          <span class="subtitle">{{ 'home.quickLinks.tableSubtitle' | translate }}</span>
         </a>
       </div>
     </section>
 
     <section class="card stats-card">
-      <h2>Stats</h2>
+      <h2>{{ 'home.stats.title' | translate }}</h2>
       <div class="stats-placeholder">
-        <div class="badge">Coming soon</div>
-        <p>Top scorers, form guide, and team stats.</p>
+        <div class="badge">{{ 'home.stats.comingSoon' | translate }}</div>
+        <p>{{ 'home.stats.description' | translate }}</p>
       </div>
     </section>
   </div>

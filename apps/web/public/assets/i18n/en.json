@@ -1,0 +1,118 @@
+{
+  "app": {
+    "title": "Kazakh Football",
+    "description": "Kazakhstan Premier League"
+  },
+  "home": {
+    "noStandingsAvailable": "No standings available",
+    "quickLinks": {
+      "title": "Quick Links",
+      "teamsTitle": "Teams",
+      "teamsSubtitle": "All KPL clubs",
+      "matchesTitle": "Matches",
+      "matchesSubtitle": "Fixtures & results",
+      "tableTitle": "Table",
+      "tableSubtitle": "Full standings"
+    },
+    "stats": {
+      "title": "Stats",
+      "comingSoon": "Coming soon",
+      "description": "Top scorers, form guide, and team stats."
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "matches": "Matches",
+    "standings": "Standings",
+    "teams": "Teams"
+  },
+  "matchweek": {
+    "label": "Matchweek",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "matches": {
+    "title": "Matches",
+    "loading": "Loading matches...",
+    "error": "Failed to load matches",
+    "noMatches": "No matches found",
+    "noMatchesInRound": "No matches scheduled for this round",
+    "time": "Time",
+    "score": "Score",
+    "status": {
+      "scheduled": "Scheduled",
+      "live": "Live",
+      "finished": "Finished"
+    }
+  },
+  "standings": {
+    "title": "Standings",
+    "loading": "Loading standings...",
+    "error": "Failed to load standings",
+    "position": "Pos",
+    "team": "Team",
+    "played": "P",
+    "won": "W",
+    "drawn": "D",
+    "lost": "L",
+    "goalsFor": "GF",
+    "goalsAgainst": "GA",
+    "goalDifference": "GD",
+    "points": "Pts",
+    "form": "Last 5",
+    "legend": {
+      "win": "Win",
+      "draw": "Draw",
+      "loss": "Loss",
+      "noMatch": "No match"
+    }
+  },
+  "matchDetail": {
+    "title": "Match Details",
+    "loading": "Loading match...",
+    "error": "Failed to load match",
+    "backToMatches": "Back to matches",
+    "lineup": "Lineup",
+    "bench": "Bench",
+    "events": "Events",
+    "noEvents": "No events recorded",
+    "noLineupData": "No lineup data",
+    "noBenchData": "No bench data",
+    "startingXI": "Starting XI",
+    "round": "Round",
+    "competition": "Competition",
+    "substitution": "Substitution",
+    "goal": "Goal",
+    "yellowCard": "Yellow Card",
+    "redCard": "Red Card",
+    "assist": "Assist",
+    "substitutedOut": "Substituted out"
+  },
+  "teams": {
+    "title": "Teams",
+    "loading": "Loading teams...",
+    "error": "Failed to load teams",
+    "search": "Search teams",
+    "noTeamsFound": "No teams found",
+    "players": "Players",
+    "position": "Position"
+  },
+  "teamDetail": {
+    "backToTeams": "Back to teams",
+    "loading": "Loading team...",
+    "recentMatches": "Recent Matches",
+    "noMatchesFound": "No matches found",
+    "teamStats": "Team Stats",
+    "teamStatsPlaceholder": "Stats section will be added later.",
+    "squad": "Squad",
+    "squadPlaceholder": "Squad section will be added later."
+  },
+  "competitions": {
+    "kpl": "Kazakhstan Premier League",
+    "first": "First League"
+  },
+  "health": {
+    "status": "Status",
+    "healthy": "Healthy"
+  }
+}

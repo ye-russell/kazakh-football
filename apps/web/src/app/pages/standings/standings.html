@@ -1,8 +1,8 @@
 <div class="standings">
-  <h1>Standings</h1>
+  <h1>{{ 'standings.title' | translate }}</h1>
 
   @if (loading()) {
-    <div class="loading">Loading standings...</div>
+    <div class="loading">{{ 'standings.loading' | translate }}</div>
   }
 
   @if (error()) {
@@ -13,37 +13,37 @@
     <div class="legend" aria-label="Form legend">
       <span class="legend-item">
         <span class="legend-dot win" aria-hidden="true"></span>
-        Win
+        {{ 'standings.legend.win' | translate }}
       </span>
       <span class="legend-item">
         <span class="legend-dot draw" aria-hidden="true"></span>
-        Draw
+        {{ 'standings.legend.draw' | translate }}
       </span>
       <span class="legend-item">
         <span class="legend-dot loss" aria-hidden="true"></span>
-        Loss
+        {{ 'standings.legend.loss' | translate }}
       </span>
       <span class="legend-item">
         <span class="legend-dot none" aria-hidden="true"></span>
-        No match
+        {{ 'standings.legend.noMatch' | translate }}
       </span>
     </div>
 
     <table class="standings-table">
       <thead>
         <tr>
-          <th>Rank</th>
+          <th>{{ 'standings.position' | translate }}</th>
           <th>Δ</th>
-          <th>Team</th>
-          <th>Form (Last 5)</th>
-          <th>P</th>
-          <th>W</th>
-          <th>D</th>
-          <th>L</th>
-          <th>GF</th>
-          <th>GA</th>
-          <th>GD</th>
-          <th>Pts</th>
+          <th>{{ 'standings.team' | translate }}</th>
+          <th>{{ 'standings.form' | translate }}</th>
+          <th>{{ 'standings.played' | translate }}</th>
+          <th>{{ 'standings.won' | translate }}</th>
+          <th>{{ 'standings.drawn' | translate }}</th>
+          <th>{{ 'standings.lost' | translate }}</th>
+          <th>{{ 'standings.goalsFor' | translate }}</th>
+          <th>{{ 'standings.goalsAgainst' | translate }}</th>
+          <th>{{ 'standings.goalDifference' | translate }}</th>
+          <th>{{ 'standings.points' | translate }}</th>
         </tr>
       </thead>
       <tbody>

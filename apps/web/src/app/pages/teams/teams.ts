@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TeamsService } from '../../shared/services/teams.service';
 import { Team } from '../../shared/interfaces/api.interfaces';
 
@@ -9,7 +10,7 @@ import { Team } from '../../shared/interfaces/api.interfaces';
   templateUrl: './teams.html',
   styleUrl: './teams.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
 })
 export class Teams implements OnInit {
   private readonly teamsService = inject(TeamsService);

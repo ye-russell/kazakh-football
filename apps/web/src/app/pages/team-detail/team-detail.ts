@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule } from '@ngx-translate/core';
 import { TeamsService } from '../../shared/services/teams.service';
 import { MatchesService } from '../../shared/services/matches.service';
 import { Match, Team } from '../../shared/interfaces/api.interfaces';
@@ -11,7 +12,7 @@ import { Match, Team } from '../../shared/interfaces/api.interfaces';
   templateUrl: './team-detail.html',
   styleUrl: './team-detail.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslateModule],
 })
 export class TeamDetail implements OnInit {
   private readonly teamsService = inject(TeamsService);

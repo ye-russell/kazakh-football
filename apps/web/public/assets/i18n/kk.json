@@ -1,0 +1,118 @@
+{
+  "app": {
+    "title": "Қазақ Футболы",
+    "description": "Қазақстан Премьер Лигасы"
+  },
+  "home": {
+    "noStandingsAvailable": "Турнир кестесі қолжетімді емес",
+    "quickLinks": {
+      "title": "Жылдам сілтемелер",
+      "teamsTitle": "Командалар",
+      "teamsSubtitle": "ҚПЛ-дің барлық клубтары",
+      "matchesTitle": "Ойындар",
+      "matchesSubtitle": "Кесте және нәтижелер",
+      "tableTitle": "Кесте",
+      "tableSubtitle": "Толық турнир кестесі"
+    },
+    "stats": {
+      "title": "Статистика",
+      "comingSoon": "Жақында",
+      "description": "Үздік сұрмергендер, форма көрсеткіші және команда статистикасы."
+    }
+  },
+  "nav": {
+    "home": "Басты бет",
+    "matches": "Ойындар",
+    "standings": "Кестесі",
+    "teams": "Командалар"
+  },
+  "matchweek": {
+    "label": "Ойын апталығы",
+    "previous": "Алдыңғы",
+    "next": "Келесі"
+  },
+  "matches": {
+    "title": "Ойындар",
+    "loading": "Ойындар жүктелуде...",
+    "error": "Ойындарды жүктеу сәтсіз болды",
+    "noMatches": "Ойындар табылмады",
+    "noMatchesInRound": "Бұл турда ойындар жоспарланбаған",
+    "time": "Уақыт",
+    "score": "Есебі",
+    "status": {
+      "scheduled": "Өтінің күтілуде",
+      "live": "Ағымда",
+      "finished": "Аяқталды"
+    }
+  },
+  "standings": {
+    "title": "Кестесі",
+    "loading": "Кестесі жүктелуде...",
+    "error": "Кестесін жүктеу сәтсіз болды",
+    "position": "Орн",
+    "team": "Команда",
+    "played": "О",
+    "won": "Ж",
+    "drawn": "Т",
+    "lost": "Ж",
+    "goalsFor": "ҚУ",
+    "goalsAgainst": "ҚЕ",
+    "goalDifference": "Айырм",
+    "points": "Ұпай",
+    "form": "Соңғы 5",
+    "legend": {
+      "win": "Жеңіс",
+      "draw": "Тең",
+      "loss": "Жеңіліс",
+      "noMatch": "Ойын жоқ"
+    }
+  },
+  "matchDetail": {
+    "title": "Ойын Бөлінтісі",
+    "loading": "Ойын жүктелуде...",
+    "error": "Ойынды жүктеу сәтсіз болды",
+    "backToMatches": "Ойындарға оралу",
+    "lineup": "Құрамасы",
+    "bench": "Ауыстыру құрамасы",
+    "events": "Оқиғалар",
+    "noEvents": "Оқиға жазылмаған",
+    "noLineupData": "Құрам деректері жоқ",
+    "noBenchData": "Қосалқы құрам деректері жоқ",
+    "startingXI": "Басты он бір",
+    "round": "Тур",
+    "competition": "Жарыс",
+    "substitution": "Ауыстыру",
+    "goal": "Гол",
+    "yellowCard": "Сары карточка",
+    "redCard": "Қызыл карточка",
+    "assist": "Ассист",
+    "substitutedOut": "Ауыстырылды"
+  },
+  "teams": {
+    "title": "Командалар",
+    "loading": "Командалар жүктелуде...",
+    "error": "Командаларды жүктеу сәтсіз болды",
+    "search": "Командаларды іздеу",
+    "noTeamsFound": "Командалар табылмады",
+    "players": "Ойыншылар",
+    "position": "Позициясы"
+  },
+  "teamDetail": {
+    "backToTeams": "Командаларға оралу",
+    "loading": "Команда жүктелуде...",
+    "recentMatches": "Соңғы матчтар",
+    "noMatchesFound": "Матчтар табылмады",
+    "teamStats": "Команда статистикасы",
+    "teamStatsPlaceholder": "Статистика бөлімі кейін қосылады.",
+    "squad": "Құрам",
+    "squadPlaceholder": "Құрам бөлімі кейін қосылады."
+  },
+  "competitions": {
+    "kpl": "Қазақстан Премьер-Лигасы",
+    "first": "Бірінші лига"
+  },
+  "health": {
+    "status": "Күйі",
+    "healthy": "Сау"
+  }
+}

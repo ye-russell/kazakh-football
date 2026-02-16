@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
 import { MatchesService } from '../../shared/services/matches.service';
 import { StandingsService } from '../../shared/services/standings.service';
 import { LeagueService } from '../../shared/services/league.service';
@@ -13,7 +14,7 @@ import { Router, RouterLink } from '@angular/router';
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatchweekSelector, MatchesList, RouterLink],
+  imports: [CommonModule, MatchweekSelector, MatchesList, RouterLink, TranslateModule, TranslatePipe],
 })
 export class Home implements OnInit {
   private readonly matchesService = inject(MatchesService);

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal 
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
 import { MatchesService } from '../../shared/services/matches.service';
 import { LeagueService } from '../../shared/services/league.service';
 import { MatchweekSelector } from '../../shared/components/matchweek-selector/matchweek-selector';
@@ -13,7 +14,7 @@ import { Match } from '../../shared/interfaces/api.interfaces';
   templateUrl: './matches.html',
   styleUrl: './matches.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatchweekSelector, MatchesList],
+  imports: [CommonModule, MatchweekSelector, MatchesList, TranslateModule, TranslatePipe],
 })
 export class Matches implements OnInit {
   private readonly matchesService = inject(MatchesService);

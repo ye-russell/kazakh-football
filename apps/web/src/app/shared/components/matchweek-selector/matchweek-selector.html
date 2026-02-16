@@ -3,12 +3,12 @@
     class="arrow-btn prev-btn"
     [disabled]="isPreviousDisabled()"
     (click)="previousRound()"
-    aria-label="Previous round">
+    [attr.aria-label]="'matchweek.previous' | translate">
     <span class="arrow-icon">‹</span>
-    <span class="arrow-text">Previous</span>
+    <span class="arrow-text">{{ 'matchweek.previous' | translate }}</span>
   </button>
   <div class="round-display">
-    Matchweek {{ round() }}
+    {{ 'matchweek.label' | translate }} {{ round() }}
     @if (maxRound()) {
       <span class="round-total">/ {{ maxRound() }}</span>
     }
@@ -17,8 +17,8 @@
     class="arrow-btn next-btn"
     [disabled]="isNextDisabled()"
     (click)="nextRound()"
-    aria-label="Next round">
-    <span class="arrow-text">Next</span>
+    [attr.aria-label]="'matchweek.next' | translate">
+    <span class="arrow-text">{{ 'matchweek.next' | translate }}</span>
     <span class="arrow-icon">›</span>
   </button>
 </div>

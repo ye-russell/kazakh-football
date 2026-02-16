@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatchesService } from '../../shared/services/matches.service';
 import { Match, MatchEvent, MatchLineup } from '../../shared/interfaces/api.interfaces';
 
@@ -10,7 +11,7 @@ import { Match, MatchEvent, MatchLineup } from '../../shared/interfaces/api.inte
   templateUrl: './match-detail.html',
   styleUrl: './match-detail.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
 })
 export class MatchDetail implements OnInit {
   private readonly matchesService = inject(MatchesService);
@@ -103,7 +104,7 @@ export class MatchDetail implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(err?.error?.message || 'Failed to load match details');
+        this.error.set(err?.error?.message || 'matchDetail.error');
         this.loading.set(false);
         console.error('Error loading match detail:', err);
       },
@@ -113,11 +114,11 @@ export class MatchDetail implements OnInit {
   getStatusLabel(status: Match['status']): string {
     switch (status) {
       case 'scheduled':
-        return 'Scheduled';
+        return 'matches.status.scheduled';
       case 'live':
-        return 'Live';
+        return 'matches.status.live';
       case 'finished':
-        return 'Finished';
+        return 'matches.status.finished';
       default:
         return status;
     }
@@ -141,6 +142,10 @@ export class MatchDetail implements OnInit {
     return round ? { round } : null;
   }
 
+  getCompetitionKey(code: string | undefined): string {
+    return `competitions.${(code ?? '').toLowerCase()}`;
+  }
+
   getEventMinute(event: MatchEvent): string {
     if (event.extraMinute) {
       return `${event.minute}+${event.extraMinute}'`;
@@ -151,13 +156,13 @@ export class MatchDetail implements OnInit {
   getEventLabel(event: MatchEvent): string {
     switch (event.type) {
       case 'goal':
-        return 'Goal';
+        return 'matchDetail.goal';
       case 'yellow_card':
-        return 'Yellow card';
+        return 'matchDetail.yellowCard';
       case 'red_card':
-        return 'Red card';
+        return 'matchDetail.redCard';
       case 'substitution':
-        return 'Substitution';
+        return 'matchDetail.substitution';
       default:
         return event.type;
     }
@@ -165,13 +170,13 @@ export class MatchDetail implements OnInit {
 
   getEventDetail(event: MatchEvent): string {
     if (event.type === 'goal') {
-      const assist = event.assistPlayer ? ` (assist ${event.assistPlayer.name})` : '';
+      const assist = event.assistPlayer ? ` (${event.assistPlayer.name})` : '';
       return `${event.player.name}${assist}`;
     }
 
     if (event.type === 'substitution') {
-      const subIn = event.subInPlayer ? event.subInPlayer.name : 'Sub in';
-      const subOut = event.subOutPlayer ? event.subOutPlayer.name : 'Sub out';
+      const subIn = event.subInPlayer ? event.subInPlayer.name : 'IN';
+      const subOut = event.subOutPlayer ? event.subOutPlayer.name : 'OUT';
       return `${subIn} ⇄ ${subOut}`;
     }
 

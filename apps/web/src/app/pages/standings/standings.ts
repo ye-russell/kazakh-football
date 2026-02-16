@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
+import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
 import { StandingsService } from '../../shared/services/standings.service';
 import { MatchesService } from '../../shared/services/matches.service';
 import { Match, Standing } from '../../shared/interfaces/api.interfaces';
@@ -12,7 +13,7 @@ type TeamLastResult = 'W' | 'D' | 'L' | '—';
   templateUrl: './standings.html',
   styleUrl: './standings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule, TranslatePipe],
 })
 export class Standings implements OnInit {
   private readonly standingsService = inject(StandingsService);

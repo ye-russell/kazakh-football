@@ -1,6 +1,6 @@
 <div class="matches-list">
   @if (loading()) {
-    <div class="loading">Loading matches...</div>
+    <div class="loading">{{ 'matches.loading' | translate }}</div>
   }
 
   @if (error()) {
@@ -32,7 +32,7 @@
                     <div class="kickoff-time">{{ formatTime(match.kickoffAt) }}</div>
                   }
                   <div class="status" [class]="'status ' + getStatusClass(match.status)">
-                    {{ getStatusLabel(match.status) }}
+                    {{ getStatusLabel(match.status) | translate }}
                   </div>
                 </div>
 
@@ -49,6 +49,6 @@
   }
 
   @if (!loading() && !error() && matches().length === 0) {
-    <div class="no-matches">No matches scheduled for this round</div>
+    <div class="no-matches">{{ 'matches.noMatchesInRound' | translate }}</div>
   }
 </div>

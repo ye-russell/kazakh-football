@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Match } from '../../interfaces/api.interfaces';
 
 @Component({
@@ -8,19 +10,32 @@ import { Match } from '../../interfaces/api.interfaces';
   templateUrl: './matches-list.html',
   styleUrl: './matches-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
 })
 export class MatchesList {
+  private readonly translate = inject(TranslateService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly matches = input.required<Match[]>();
   readonly loading = input.required<boolean>();
   readonly error = input.required<string | null>();
   readonly round = input<number | null>(null);
-  readonly groupedMatches = computed(() => this.buildGroups(this.matches()));
+  private readonly locale = signal(this.resolveLocale(this.translate.currentLang));
+  readonly groupedMatches = computed(() => {
+    this.locale();
+    return this.buildGroups(this.matches());
+  });
+
+  constructor() {
+    this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      this.locale.set(this.resolveLocale(event.lang));
+    });
+  }
 
   formatTime(kickoffAt: string): string {
     try {
       const date = new Date(kickoffAt);
-      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString(this.locale(), { hour: '2-digit', minute: '2-digit' });
     } catch {
       return '-';
     }
@@ -29,7 +44,7 @@ export class MatchesList {
   formatDateLabel(kickoffAt: string): string {
     try {
       const date = new Date(kickoffAt);
-      return date.toLocaleDateString('en-US', {
+      return date.toLocaleDateString(this.locale(), {
         weekday: 'long',
         month: 'short',
         day: 'numeric',
@@ -53,11 +68,11 @@ export class MatchesList {
   getStatusLabel(status: string): string {
     switch (status) {
       case 'scheduled':
-        return 'Scheduled';
+        return 'matches.status.scheduled';
       case 'live':
-        return 'Live';
+        return 'matches.status.live';
       case 'finished':
-        return 'Finished';
+        return 'matches.status.finished';
       default:
         return status;
     }
@@ -98,5 +113,27 @@ export class MatchesList {
     });
 
     return Array.from(groups.values());
+  }
+
+  private resolveLocale(lang: string | undefined): string {
+    if (lang === 'kk') {
+      return this.pickSupportedLocale(['kk-KZ', 'kk'], 'en-US');
+    }
+
+    if (lang === 'ru') {
+      return this.pickSupportedLocale(['ru-RU', 'ru'], 'en-US');
+    }
+
+    return this.pickSupportedLocale(['en-US', 'en'], 'en-US');
+  }
+
+  private pickSupportedLocale(candidates: string[], fallback: string): string {
+    for (const candidate of candidates) {
+      if (Intl.DateTimeFormat.supportedLocalesOf(candidate).length > 0) {
+        return candidate;
+      }
+    }
+
+    return fallback;
   }
 }

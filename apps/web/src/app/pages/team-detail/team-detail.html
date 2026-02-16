@@ -1,8 +1,8 @@
 <div class="team-detail">
-  <a class="back-link" [routerLink]="['/teams']">← Back to teams</a>
+  <a class="back-link" [routerLink]="['/teams']">← {{ 'teamDetail.backToTeams' | translate }}</a>
 
   @if (loading()) {
-    <div class="loading">Loading team...</div>
+    <div class="loading">{{ 'teamDetail.loading' | translate }}</div>
   }
 
   @if (error()) {
@@ -21,7 +21,7 @@
     </header>
 
     <section class="recent-matches">
-      <h2>Recent Matches</h2>
+      <h2>{{ 'teamDetail.recentMatches' | translate }}</h2>
 
       @if (recentMatches().length > 0) {
         <div class="matches-list">
@@ -43,18 +43,18 @@
           }
         </div>
       } @else {
-        <div class="no-matches">No matches found</div>
+        <div class="no-matches">{{ 'teamDetail.noMatchesFound' | translate }}</div>
       }
     </section>
 
     <section class="placeholder-section">
-      <h2>Team Stats</h2>
-      <p>Stats section will be added later.</p>
+      <h2>{{ 'teamDetail.teamStats' | translate }}</h2>
+      <p>{{ 'teamDetail.teamStatsPlaceholder' | translate }}</p>
     </section>
 
     <section class="placeholder-section">
-      <h2>Squad</h2>
-      <p>Squad section will be added later.</p>
+      <h2>{{ 'teamDetail.squad' | translate }}</h2>
+      <p>{{ 'teamDetail.squadPlaceholder' | translate }}</p>
     </section>
   }
 </div>

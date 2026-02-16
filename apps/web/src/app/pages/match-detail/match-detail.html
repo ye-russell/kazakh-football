@@ -1,10 +1,10 @@
 <div class="match-detail">
   <a class="back-link" [routerLink]="['/matches']" [queryParams]="getBackQueryParams()">
-    ← Back to matches
+    ← {{ 'matchDetail.backToMatches' | translate }}
   </a>
 
   @if (loading()) {
-    <div class="loading">Loading match details...</div>
+    <div class="loading">{{ 'matchDetail.loading' | translate }}</div>
   }
 
   @if (error()) {
@@ -22,7 +22,7 @@
         <div class="score-block">
           <div class="score">{{ scoreDisplay() }}</div>
           <div class="status" [class]="getStatusClass(match.status)">
-            {{ getStatusLabel(match.status) }}
+            {{ getStatusLabel(match.status) | translate }}
           </div>
         </div>
 
@@ -39,7 +39,7 @@
     </header>
         <section class="events">
       <div class="section-header">
-        <h2>Match Events</h2>
+            <h2>{{ 'matchDetail.events' | translate }}</h2>
       </div>
 
       <div class="events-grid">
@@ -51,14 +51,14 @@
                 <li>
                   <span class="event-minute">{{ getEventMinute(event) }}</span>
                   <span class="event-type" [class]="'event-type ' + event.type">
-                    {{ getEventLabel(event) }}
+                    {{ getEventLabel(event) | translate }}
                   </span>
                   <span class="event-detail">{{ getEventDetail(event) }}</span>
                 </li>
               }
             </ul>
           } @else {
-            <div class="empty">No events yet</div>
+            <div class="empty">{{ 'matchDetail.noEvents' | translate }}</div>
           }
         </div>
 
@@ -70,14 +70,14 @@
                 <li>
                   <span class="event-minute">{{ getEventMinute(event) }}</span>
                   <span class="event-type" [class]="'event-type ' + event.type">
-                    {{ getEventLabel(event) }}
+                    {{ getEventLabel(event) | translate }}
                   </span>
                   <span class="event-detail">{{ getEventDetail(event) }}</span>
                 </li>
               }
             </ul>
           } @else {
-            <div class="empty">No events yet</div>
+            <div class="empty">{{ 'matchDetail.noEvents' | translate }}</div>
           }
         </div>
       </div>
@@ -85,14 +85,14 @@
 
     <section class="lineups">
       <div class="section-header">
-        <h2>Starting XI & Bench</h2>
+        <h2>{{ 'matchDetail.lineup' | translate }}</h2>
       </div>
 
       <div class="lineup-grid">
         <div class="lineup-column">
           <h3>{{ match.homeTeam.name }}</h3>
           <div class="lineup-group">
-            <div class="lineup-title">Starters</div>
+            <div class="lineup-title">{{ 'matchDetail.startingXI' | translate }}</div>
             @if (lineupsByTeam().home.starters.length > 0) {
               <ul class="lineup-list">
                 @for (player of lineupsByTeam().home.starters; track player.id) {
@@ -106,12 +106,12 @@
                 }
               </ul>
             } @else {
-              <div class="empty">No lineup data</div>
+              <div class="empty">{{ 'matchDetail.noLineupData' | translate }}</div>
             }
           </div>
 
           <div class="lineup-group">
-            <div class="lineup-title">Bench</div>
+            <div class="lineup-title">{{ 'matchDetail.bench' | translate }}</div>
             @if (lineupsByTeam().home.bench.length > 0) {
               <ul class="lineup-list">
                 @for (player of lineupsByTeam().home.bench; track player.id) {
@@ -125,7 +125,7 @@
                 }
               </ul>
             } @else {
-              <div class="empty">No bench data</div>
+              <div class="empty">{{ 'matchDetail.noBenchData' | translate }}</div>
             }
           </div>
         </div>
@@ -133,7 +133,7 @@
         <div class="lineup-column">
           <h3>{{ match.awayTeam.name }}</h3>
           <div class="lineup-group">
-            <div class="lineup-title">Starters</div>
+            <div class="lineup-title">{{ 'matchDetail.startingXI' | translate }}</div>
             @if (lineupsByTeam().away.starters.length > 0) {
               <ul class="lineup-list">
                 @for (player of lineupsByTeam().away.starters; track player.id) {
@@ -147,12 +147,12 @@
                 }
               </ul>
             } @else {
-              <div class="empty">No lineup data</div>
+              <div class="empty">{{ 'matchDetail.noLineupData' | translate }}</div>
             }
           </div>
 
           <div class="lineup-group">
-            <div class="lineup-title">Bench</div>
+            <div class="lineup-title">{{ 'matchDetail.bench' | translate }}</div>
             @if (lineupsByTeam().away.bench.length > 0) {
               <ul class="lineup-list">
                 @for (player of lineupsByTeam().away.bench; track player.id) {
@@ -166,7 +166,7 @@
                 }
               </ul>
             } @else {
-              <div class="empty">No bench data</div>
+              <div class="empty">{{ 'matchDetail.noBenchData' | translate }}</div>
             }
           </div>
         </div>
@@ -175,12 +175,18 @@
     
     <section class="match-meta">
       <div class="meta-item">
-        <span class="label">Round</span>
+        <span class="label">{{ 'matchDetail.round' | translate }}</span>
         <span class="value">{{ match.round }}</span>
       </div>
       <div class="meta-item">
-        <span class="label">Competition</span>
-        <span class="value">{{ match.competition?.code || '-' }}</span>
+        <span class="label">{{ 'matchDetail.competition' | translate }}</span>
+        <span class="value">
+          @if (match.competition?.code) {
+            {{ getCompetitionKey(match.competition?.code) | translate }}
+          } @else {
+            -
+          }
+        </span>
       </div>
     </section>
   }

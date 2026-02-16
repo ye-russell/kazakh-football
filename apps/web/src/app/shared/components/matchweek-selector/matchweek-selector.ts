@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, output, input, computed } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-matchweek-selector',
   templateUrl: './matchweek-selector.html',
   styleUrl: './matchweek-selector.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslatePipe],
 })
 export class MatchweekSelector {
   readonly round = input.required<number>();

@@ -1,21 +1,22 @@
 <div class="layout">
   <header class="header">
     <nav class="nav">
-      <a routerLink="/" class="logo">Kazakh Football</a>
+      <a routerLink="/" class="logo">{{ 'app.title' | translate }}</a>
       <ul class="nav-links">
         <li>
-          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'nav.home' | translate }}</a>
         </li>
         <li>
-          <a routerLink="/standings" routerLinkActive="active">Standings</a>
+          <a routerLink="/standings" routerLinkActive="active">{{ 'nav.standings' | translate }}</a>
         </li>
         <li class="matches-link">
-          <a routerLink="/matches" routerLinkActive="active">Matches</a>
+          <a routerLink="/matches" routerLinkActive="active">{{ 'nav.matches' | translate }}</a>
         </li>
         <li>
-          <a routerLink="/teams" routerLinkActive="active">Teams</a>
+          <a routerLink="/teams" routerLinkActive="active">{{ 'nav.teams' | translate }}</a>
         </li>
       </ul>
+      <app-language-switcher></app-language-switcher>
     </nav>
   </header>
   <main class="main">

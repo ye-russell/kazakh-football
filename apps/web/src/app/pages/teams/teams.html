@@ -1,18 +1,18 @@
 <div class="teams">
-  <h1>Teams</h1>
+  <h1>{{ 'teams.title' | translate }}</h1>
 
   <div class="search-bar">
     <input
       type="search"
       class="search-input"
-      placeholder="Search teams"
-      aria-label="Search teams"
+      [placeholder]="'teams.search' | translate"
+      [attr.aria-label]="'teams.search' | translate"
       (input)="onSearchInput($event)"
     />
   </div>
 
   @if (loading()) {
-    <div class="loading">Loading teams...</div>
+    <div class="loading">{{ 'teams.loading' | translate }}</div>
   }
 
   @if (error()) {
@@ -34,6 +34,6 @@
   }
 
   @if (!loading() && !error() && filteredTeams().length === 0) {
-    <div class="no-results">No teams found</div>
+    <div class="no-results">{{ 'teams.noTeamsFound' | translate }}</div>
   }
 </div>
