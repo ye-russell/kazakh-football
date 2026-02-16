@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { CommonModule } from '@angular/common';
 import { MatchesService } from '../../shared/services/matches.service';
 import { StandingsService } from '../../shared/services/standings.service';
+import { LeagueService } from '../../shared/services/league.service';
 import { MatchweekSelector } from '../../shared/components/matchweek-selector/matchweek-selector';
 import { MatchesList } from '../../shared/components/matches-list/matches-list';
 import { Match, Standing } from '../../shared/interfaces/api.interfaces';
@@ -17,9 +18,11 @@ import { Router, RouterLink } from '@angular/router';
 export class Home implements OnInit {
   private readonly matchesService = inject(MatchesService);
   private readonly standingsService = inject(StandingsService);
+  private readonly leagueService = inject(LeagueService);
   private readonly router = inject(Router);
 
   protected readonly currentRound = signal(1);
+  protected readonly maxRound = signal<number | null>(null);
   protected readonly matches = signal<Match[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -31,11 +34,26 @@ export class Home implements OnInit {
   protected readonly topStandings = computed(() => this.standings().slice(0, 5));
 
   ngOnInit() {
-    // Load matches for current round
-    this.loadMatches(this.currentRound());
+    this.loadLeague();
 
     // Load standings snapshot
     this.loadStandings();
+  }
+
+  private loadLeague() {
+    this.leagueService.getLeague().subscribe({
+      next: (data) => {
+        const competition = data.competitions.find((item) => item.code === 'kpl');
+        const round = competition?.currentRound ?? 1;
+        const maxRound = competition?.maxRound ?? null;
+        this.maxRound.set(maxRound);
+        this.currentRound.set(round);
+        this.loadMatches(round);
+      },
+      error: () => {
+        this.loadMatches(this.currentRound());
+      },
+    });
   }
 
   private loadMatches(round: number) {
@@ -55,8 +73,10 @@ export class Home implements OnInit {
   }
 
   onRoundChanged(round: number) {
-    this.currentRound.set(round);
-    this.loadMatches(round);
+    const maxRound = this.maxRound();
+    const nextRound = maxRound ? Math.min(round, maxRound) : round;
+    this.currentRound.set(nextRound);
+    this.loadMatches(nextRound);
   }
 
   viewAllMatches() {

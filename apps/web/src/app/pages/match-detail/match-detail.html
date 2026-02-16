@@ -37,15 +37,49 @@
         <div class="kickoff-time">{{ kickoffTime() }}</div>
       </div>
     </header>
-
-    <section class="match-meta">
-      <div class="meta-item">
-        <span class="label">Round</span>
-        <span class="value">{{ match.round }}</span>
+        <section class="events">
+      <div class="section-header">
+        <h2>Match Events</h2>
       </div>
-      <div class="meta-item">
-        <span class="label">Competition</span>
-        <span class="value">{{ match.competition?.code || '-' }}</span>
+
+      <div class="events-grid">
+        <div class="events-column">
+          <h3>{{ match.homeTeam.name }}</h3>
+          @if (eventsByTeam().home.length > 0) {
+            <ul class="events-list">
+              @for (event of eventsByTeam().home; track event.id) {
+                <li>
+                  <span class="event-minute">{{ getEventMinute(event) }}</span>
+                  <span class="event-type" [class]="'event-type ' + event.type">
+                    {{ getEventLabel(event) }}
+                  </span>
+                  <span class="event-detail">{{ getEventDetail(event) }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <div class="empty">No events yet</div>
+          }
+        </div>
+
+        <div class="events-column">
+          <h3>{{ match.awayTeam.name }}</h3>
+          @if (eventsByTeam().away.length > 0) {
+            <ul class="events-list">
+              @for (event of eventsByTeam().away; track event.id) {
+                <li>
+                  <span class="event-minute">{{ getEventMinute(event) }}</span>
+                  <span class="event-type" [class]="'event-type ' + event.type">
+                    {{ getEventLabel(event) }}
+                  </span>
+                  <span class="event-detail">{{ getEventDetail(event) }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <div class="empty">No events yet</div>
+          }
+        </div>
       </div>
     </section>
 
@@ -138,50 +172,15 @@
         </div>
       </div>
     </section>
-
-    <section class="events">
-      <div class="section-header">
-        <h2>Match Events</h2>
+    
+    <section class="match-meta">
+      <div class="meta-item">
+        <span class="label">Round</span>
+        <span class="value">{{ match.round }}</span>
       </div>
-
-      <div class="events-grid">
-        <div class="events-column">
-          <h3>{{ match.homeTeam.name }}</h3>
-          @if (eventsByTeam().home.length > 0) {
-            <ul class="events-list">
-              @for (event of eventsByTeam().home; track event.id) {
-                <li>
-                  <span class="event-minute">{{ getEventMinute(event) }}</span>
-                  <span class="event-type" [class]="'event-type ' + event.type">
-                    {{ getEventLabel(event) }}
-                  </span>
-                  <span class="event-detail">{{ getEventDetail(event) }}</span>
-                </li>
-              }
-            </ul>
-          } @else {
-            <div class="empty">No events yet</div>
-          }
-        </div>
-
-        <div class="events-column">
-          <h3>{{ match.awayTeam.name }}</h3>
-          @if (eventsByTeam().away.length > 0) {
-            <ul class="events-list">
-              @for (event of eventsByTeam().away; track event.id) {
-                <li>
-                  <span class="event-minute">{{ getEventMinute(event) }}</span>
-                  <span class="event-type" [class]="'event-type ' + event.type">
-                    {{ getEventLabel(event) }}
-                  </span>
-                  <span class="event-detail">{{ getEventDetail(event) }}</span>
-                </li>
-              }
-            </ul>
-          } @else {
-            <div class="empty">No events yet</div>
-          }
-        </div>
+      <div class="meta-item">
+        <span class="label">Competition</span>
+        <span class="value">{{ match.competition?.code || '-' }}</span>
       </div>
     </section>
   }

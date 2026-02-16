@@ -25,6 +25,8 @@ export interface Competition {
   code: string;
   name: string;
   season: number;
+  currentRound?: number | null;
+  maxRound?: number | null;
 }
 
 /**

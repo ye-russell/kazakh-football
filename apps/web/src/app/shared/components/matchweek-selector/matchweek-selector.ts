@@ -8,8 +8,16 @@ import { ChangeDetectionStrategy, Component, output, input, computed } from '@an
 })
 export class MatchweekSelector {
   readonly round = input.required<number>();
+  readonly maxRound = input<number | null>(null);
   readonly roundChanged = output<number>();
   readonly isPreviousDisabled = computed(() => this.round() <= 1);
+  readonly isNextDisabled = computed(() => {
+    const maxRound = this.maxRound();
+    if (!maxRound) {
+      return false;
+    }
+    return this.round() >= maxRound;
+  });
 
   previousRound() {
     if (this.round() > 1) {
@@ -18,6 +26,8 @@ export class MatchweekSelector {
   }
 
   nextRound() {
-    this.roundChanged.emit(this.round() + 1);
+    if (!this.isNextDisabled()) {
+      this.roundChanged.emit(this.round() + 1);
+    }
   }
 }

@@ -9,9 +9,13 @@
   </button>
   <div class="round-display">
     Matchweek {{ round() }}
+    @if (maxRound()) {
+      <span class="round-total">/ {{ maxRound() }}</span>
+    }
   </div>
   <button 
     class="arrow-btn next-btn"
+    [disabled]="isNextDisabled()"
     (click)="nextRound()"
     aria-label="Next round">
     <span class="arrow-text">Next</span>

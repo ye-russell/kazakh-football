@@ -31,6 +31,7 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - League metadata (season, competitions)
 - Teams and team detail pages
 - Matches (by competition and round) + match detail page
+- Players, match events (goals/cards/subs), and starting lineups
 - Automatically computed standings
 - Responsive web UI with core navigation and layouts
 
@@ -101,7 +102,9 @@ Angular / PWA / Mobile
 ```
 GET /league
 GET /teams
+GET /players
 GET /matches?competition=kpl&round=1
+GET /matches/:id
 GET /standings?competition=kpl
 ```
 
@@ -167,6 +170,7 @@ pnpm --filter web start
 Create `.env` inside `apps/api`:
 ```env
 DATABASE_URL=postgresql://...
+DIRECT_URL=postgresql://... # direct (non-pooler) connection for migrations/seeds
 PORT=3000
 ```
 

@@ -116,6 +116,32 @@ Supabase is used **only as a database** at this stage; Prisma is the data access
 - homeScore (nullable)
 - awayScore (nullable)
 
+**Player**
+- id
+- teamId
+- name
+- number (optional)
+- position (optional)
+
+**MatchEvent**
+- id
+- matchId
+- teamId
+- playerId
+- type (goal | yellow_card | red_card | substitution)
+- minute (+ optional extraMinute)
+- assistPlayerId (optional)
+- subInPlayerId (optional)
+- subOutPlayerId (optional)
+
+**MatchLineup**
+- id
+- matchId
+- teamId
+- playerId
+- isStarter
+- position (optional)
+
 Indexes are defined for efficient querying by competition, round, kickoff time, and teams.
 Constraint: homeTeamId != awayTeamId (prevents a team from playing itself).
 
@@ -191,6 +217,8 @@ Reasoning:
 **Additional endpoints added**
 - GET /teams/:id
 - GET /matches/:id
+- GET /players
+- GET /players/:id
 - GET /health
 
 Backend MVP is functionally complete.
@@ -239,6 +267,7 @@ Frontend is now implemented with a responsive UI and basic functionality, using 
 - Standings page
 - Matches list with matchweek navigation
 - Match detail page
+- Match detail includes events, assists, substitutions, and starting lineups
 - Teams list with search
 - Team detail page with recent matches
 
@@ -259,9 +288,10 @@ Short-term:
 - Frontend MVP
 - Basic navigation
 - Polling-based live updates
+- Player and match event UI polish
 
 Mid-term:
-- Player entities
+- Player profiles
 - Transfers with historical contracts
 - News feed
 - Push notifications
@@ -288,5 +318,5 @@ Long-term:
 
 The project has successfully transitioned from idea to a **working backend platform** and a **functional, responsive web frontend**. The hardest technical risks (DB, schema, migrations, connectivity) are resolved. The system now provides a usable UI for core browsing flows.
 
-The next logical phase is **frontend polish + product depth** (live updates, matchweek metadata, UX refinements), not more backend plumbing.
+The next logical phase is **frontend polish + product depth** (live updates, matchweek metadata, event timelines, UX refinements), not more backend plumbing.
 

@@ -153,7 +153,7 @@ async function main() {
     where: {
       match: {
         competitionId: kpl.id,
-        round: 1,
+        round: { in: [1, 2] },
       },
     },
   });
@@ -162,7 +162,7 @@ async function main() {
     where: {
       match: {
         competitionId: kpl.id,
-        round: 1,
+        round: { in: [1, 2] },
       },
     },
   });
@@ -175,11 +175,11 @@ async function main() {
     },
   });
 
-  // Delete existing matches for round 1 to avoid duplicates
+  // Delete existing matches for round 1 and 2 to avoid duplicates
   await prisma.match.deleteMany({
     where: {
       competitionId: kpl.id,
-      round: 1,
+      round: { in: [1, 2] },
     },
   });
 
@@ -266,6 +266,89 @@ async function main() {
 
   console.log(`✓ ${matches.length} matches created for KPL Round 1`);
 
+  // Create KPL round 2 matches
+  const round2Date = new Date('2026-03-22T15:00:00Z');
+
+  const round2Matches = await Promise.all([
+    // Finished matches with scores
+    prisma.match.create({
+      data: {
+        competitionId: kpl.id,
+        round: 2,
+        homeTeamId: teams[1].id, // FC Kairat
+        awayTeamId: teams[0].id, // FC Astana
+        kickoffAt: new Date(round2Date.getTime()),
+        status: MatchStatus.finished,
+        homeScore: 2,
+        awayScore: 1,
+      },
+    }),
+    prisma.match.create({
+      data: {
+        competitionId: kpl.id,
+        round: 2,
+        homeTeamId: teams[3].id, // FC Aktobe
+        awayTeamId: teams[2].id, // FC Tobol
+        kickoffAt: new Date(round2Date.getTime() + 3 * 60 * 60 * 1000), // +3 hours
+        status: MatchStatus.finished,
+        homeScore: 2,
+        awayScore: 0,
+      },
+    }),
+    prisma.match.create({
+      data: {
+        competitionId: kpl.id,
+        round: 2,
+        homeTeamId: teams[5].id, // FC Shakhter
+        awayTeamId: teams[4].id, // FC Ordabasy
+        kickoffAt: new Date(round2Date.getTime() + 6 * 60 * 60 * 1000), // +6 hours
+        status: MatchStatus.finished,
+        homeScore: 0,
+        awayScore: 1,
+      },
+    }),
+    // Live match with score
+    prisma.match.create({
+      data: {
+        competitionId: kpl.id,
+        round: 2,
+        homeTeamId: teams[7].id, // FC Taraz
+        awayTeamId: teams[6].id, // FC Atyrau
+        kickoffAt: new Date(round2Date.getTime() + 24 * 60 * 60 * 1000), // +1 day
+        status: MatchStatus.live,
+        homeScore: 1,
+        awayScore: 0,
+      },
+    }),
+    // Scheduled matches with null scores
+    prisma.match.create({
+      data: {
+        competitionId: kpl.id,
+        round: 2,
+        homeTeamId: teams[9].id, // FC Zhetysu
+        awayTeamId: teams[8].id, // FC Aksu
+        kickoffAt: new Date(round2Date.getTime() + 48 * 60 * 60 * 1000), // +2 days
+        status: MatchStatus.scheduled,
+        homeScore: null,
+        awayScore: null,
+      },
+    }),
+    prisma.match.create({
+      data: {
+        competitionId: kpl.id,
+        round: 2,
+        homeTeamId: teams[11].id, // FC Caspiy
+        awayTeamId: teams[10].id, // FC Kaisar
+        kickoffAt: new Date(round2Date.getTime() + 72 * 60 * 60 * 1000), // +3 days
+        status: MatchStatus.scheduled,
+        homeScore: null,
+        awayScore: null,
+      },
+    }),
+  ]);
+
+  console.log(`✓ ${round2Matches.length} matches created for KPL Round 2`);
+
   // Create players
   const playersByTeam = new Map<string, { id: string; name: string }[]>();
   const playerTemplates = [
@@ -300,11 +383,14 @@ async function main() {
 
   // Create match events for finished matches
   const [match1, match2, match3] = matches.slice(0, 3);
+  const [match2_1, match2_2, match2_3] = round2Matches.slice(0, 3);
 
   // Create lineups (simple 3 starters + 1 bench per team)
   const lineupEntries = [
     match1,
     match2,
+    match2_1,
+    match2_2,
   ].flatMap((match) => {
     const homePlayers = playersByTeam.get(match.homeTeamId)!;
     const awayPlayers = playersByTeam.get(match.awayTeamId)!;
@@ -435,6 +521,101 @@ async function main() {
       playerId: playersByTeam.get(match3.awayTeamId)![3].id,
       type: MatchEventType.red_card,
       minute: 63,
+    },
+    // Round 2: Kairat 2-1 Astana
+    {
+      matchId: match2_1.id,
+      teamId: match2_1.homeTeamId,
+      playerId: playersByTeam.get(match2_1.homeTeamId)![0].id,
+      assistPlayerId: playersByTeam.get(match2_1.homeTeamId)![1].id,
+      type: MatchEventType.goal,
+      minute: 18,
+    },
+    {
+      matchId: match2_1.id,
+      teamId: match2_1.awayTeamId,
+      playerId: playersByTeam.get(match2_1.awayTeamId)![1].id,
+      type: MatchEventType.goal,
+      minute: 35,
+    },
+    {
+      matchId: match2_1.id,
+      teamId: match2_1.homeTeamId,
+      playerId: playersByTeam.get(match2_1.homeTeamId)![2].id,
+      type: MatchEventType.yellow_card,
+      minute: 44,
+    },
+    {
+      matchId: match2_1.id,
+      teamId: match2_1.homeTeamId,
+      playerId: playersByTeam.get(match2_1.homeTeamId)![1].id,
+      assistPlayerId: playersByTeam.get(match2_1.homeTeamId)![0].id,
+      type: MatchEventType.goal,
+      minute: 71,
+    },
+    {
+      matchId: match2_1.id,
+      teamId: match2_1.awayTeamId,
+      playerId: playersByTeam.get(match2_1.awayTeamId)![3].id,
+      subInPlayerId: playersByTeam.get(match2_1.awayTeamId)![3].id,
+      subOutPlayerId: playersByTeam.get(match2_1.awayTeamId)![0].id,
+      type: MatchEventType.substitution,
+      minute: 66,
+    },
+    // Round 2: Aktobe 2-0 Tobol
+    {
+      matchId: match2_2.id,
+      teamId: match2_2.homeTeamId,
+      playerId: playersByTeam.get(match2_2.homeTeamId)![0].id,
+      assistPlayerId: playersByTeam.get(match2_2.homeTeamId)![2].id,
+      type: MatchEventType.goal,
+      minute: 14,
+    },
+    {
+      matchId: match2_2.id,
+      teamId: match2_2.homeTeamId,
+      playerId: playersByTeam.get(match2_2.homeTeamId)![1].id,
+      type: MatchEventType.goal,
+      minute: 67,
+    },
+    {
+      matchId: match2_2.id,
+      teamId: match2_2.awayTeamId,
+      playerId: playersByTeam.get(match2_2.awayTeamId)![3].id,
+      type: MatchEventType.yellow_card,
+      minute: 39,
+    },
+    {
+      matchId: match2_2.id,
+      teamId: match2_2.homeTeamId,
+      playerId: playersByTeam.get(match2_2.homeTeamId)![2].id,
+      subInPlayerId: playersByTeam.get(match2_2.homeTeamId)![3].id,
+      subOutPlayerId: playersByTeam.get(match2_2.homeTeamId)![2].id,
+      type: MatchEventType.substitution,
+      minute: 82,
+    },
+    // Round 2: Shakhter 0-1 Ordabasy
+    {
+      matchId: match2_3.id,
+      teamId: match2_3.awayTeamId,
+      playerId: playersByTeam.get(match2_3.awayTeamId)![0].id,
+      assistPlayerId: playersByTeam.get(match2_3.awayTeamId)![1].id,
+      type: MatchEventType.goal,
+      minute: 51,
+    },
+    {
+      matchId: match2_3.id,
+      teamId: match2_3.homeTeamId,
+      playerId: playersByTeam.get(match2_3.homeTeamId)![3].id,
+      type: MatchEventType.yellow_card,
+      minute: 28,
+    },
+    {
+      matchId: match2_3.id,
+      teamId: match2_3.homeTeamId,
+      playerId: playersByTeam.get(match2_3.homeTeamId)![2].id,
+      type: MatchEventType.red_card,
+      minute: 77,
     },
   ];
 
