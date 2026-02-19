@@ -60,6 +60,12 @@
     "goalDifference": "GD",
     "points": "Pts",
     "form": "Last 5",
+    "mobileView": {
+      "label": "Standings mobile view",
+      "short": "Short",
+      "full": "Full",
+      "form": "Form"
+    },
     "legend": {
       "win": "Win",
       "draw": "Draw",

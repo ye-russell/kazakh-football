@@ -7,6 +7,7 @@ import { MatchesService } from '../../shared/services/matches.service';
 import { Match, Standing } from '../../shared/interfaces/api.interfaces';
 
 type TeamLastResult = 'W' | 'D' | 'L' | '—';
+type StandingsMobileView = 'short' | 'full';
 
 @Component({
   selector: 'app-standings',
@@ -23,6 +24,7 @@ export class Standings implements OnInit {
   protected readonly matches = signal<Match[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
+  protected readonly mobileView = signal<StandingsMobileView>('short');
 
   // Computed standings with position (rank)
   protected readonly standingsWithPosition = computed(() => {
@@ -40,6 +42,10 @@ export class Standings implements OnInit {
 
   ngOnInit() {
     this.loadStandings();
+  }
+
+  protected setMobileView(view: StandingsMobileView) {
+    this.mobileView.set(view);
   }
 
   private loadStandings() {

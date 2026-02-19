@@ -60,6 +60,12 @@
     "goalDifference": "РБ",
     "points": "Очки",
     "form": "Последние 5",
+    "mobileView": {
+      "label": "Мобильный вид таблицы",
+      "short": "Кратко",
+      "full": "Полно",
+      "form": "Форма"
+    },
     "legend": {
       "win": "Победа",
       "draw": "Ничья",

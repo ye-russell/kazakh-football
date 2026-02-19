@@ -1,5 +1,25 @@
 <div class="standings">
-  <h1>{{ 'standings.title' | translate }}</h1>
+  <div class="standings-header">
+    <h1>{{ 'standings.title' | translate }}</h1>
+    @if (!loading() && !error() && standingsWithPosition().length > 0) {
+      <div class="mobile-segmented" role="group" [attr.aria-label]="'standings.mobileView.label' | translate">
+        <button
+          type="button"
+          class="segment-btn"
+          [class.active]="mobileView() === 'short'"
+          (click)="setMobileView('short')">
+          {{ 'standings.mobileView.short' | translate }}
+        </button>
+        <button
+          type="button"
+          class="segment-btn"
+          [class.active]="mobileView() === 'full'"
+          (click)="setMobileView('full')">
+          {{ 'standings.mobileView.full' | translate }}
+        </button>
+      </div>
+    }
+  </div>
 
   @if (loading()) {
     <div class="loading">{{ 'standings.loading' | translate }}</div>
@@ -29,28 +49,31 @@
       </span>
     </div>
 
-    <table class="standings-table">
+    <table
+      class="standings-table"
+      [class.view-short]="mobileView() === 'short'"
+      [class.view-full]="mobileView() === 'full'">
       <thead>
         <tr>
-          <th>{{ 'standings.position' | translate }}</th>
-          <th>Δ</th>
-          <th>{{ 'standings.team' | translate }}</th>
-          <th>{{ 'standings.form' | translate }}</th>
-          <th>{{ 'standings.played' | translate }}</th>
-          <th>{{ 'standings.won' | translate }}</th>
-          <th>{{ 'standings.drawn' | translate }}</th>
-          <th>{{ 'standings.lost' | translate }}</th>
-          <th>{{ 'standings.goalsFor' | translate }}</th>
-          <th>{{ 'standings.goalsAgainst' | translate }}</th>
-          <th>{{ 'standings.goalDifference' | translate }}</th>
-          <th>{{ 'standings.points' | translate }}</th>
+          <th class="col-position">{{ 'standings.position' | translate }}</th>
+          <th class="col-change">Δ</th>
+          <th class="col-team">{{ 'standings.team' | translate }}</th>
+          <th class="col-form">{{ 'standings.form' | translate }}</th>
+          <th class="col-played">{{ 'standings.played' | translate }}</th>
+          <th class="col-won">{{ 'standings.won' | translate }}</th>
+          <th class="col-drawn">{{ 'standings.drawn' | translate }}</th>
+          <th class="col-lost">{{ 'standings.lost' | translate }}</th>
+          <th class="col-gf">{{ 'standings.goalsFor' | translate }}</th>
+          <th class="col-ga">{{ 'standings.goalsAgainst' | translate }}</th>
+          <th class="col-gd">{{ 'standings.goalDifference' | translate }}</th>
+          <th class="col-points">{{ 'standings.points' | translate }}</th>
         </tr>
       </thead>
       <tbody>
         @for (row of standingsWithPosition(); track row.team.id) {
           <tr>
-            <td class="position">{{ row.position }}</td>
-            <td class="position-change">
+            <td class="position col-position">{{ row.position }}</td>
+            <td class="position-change col-change">
               @if (row.positionChange === null) {
                 <span class="change none" aria-label="No previous round">–</span>
               }
@@ -68,10 +91,10 @@
                 <span class="change same" aria-label="No change">–</span>
               }
             </td>
-            <td class="team-name">
+            <td class="team-name col-team">
               <span class="team-link">{{ row.team.name }}</span>
             </td>
-            <td class="last-result" aria-label="Last five match results">
+            <td class="last-result col-form" aria-label="Last five match results">
               <div class="form-dots" role="group">
                 @for (result of row.lastFive; track $index) {
                   <span
@@ -86,16 +109,16 @@
                 }
               </div>
             </td>
-            <td>{{ row.played }}</td>
-            <td>{{ row.wins }}</td>
-            <td>{{ row.draws }}</td>
-            <td>{{ row.losses }}</td>
-            <td>{{ row.goalsFor }}</td>
-            <td>{{ row.goalsAgainst }}</td>
-            <td [class.negative]="row.goalDiff < 0" [class.positive]="row.goalDiff > 0">
+            <td class="col-played">{{ row.played }}</td>
+            <td class="col-won">{{ row.wins }}</td>
+            <td class="col-drawn">{{ row.draws }}</td>
+            <td class="col-lost">{{ row.losses }}</td>
+            <td class="col-gf">{{ row.goalsFor }}</td>
+            <td class="col-ga">{{ row.goalsAgainst }}</td>
+            <td class="col-gd" [class.negative]="row.goalDiff < 0" [class.positive]="row.goalDiff > 0">
               {{ row.goalDiff > 0 ? '+' : '' }}{{ row.goalDiff }}
             </td>
-            <td class="points">{{ row.points }}</td>
+            <td class="points col-points">{{ row.points }}</td>
           </tr>
         }
       </tbody>

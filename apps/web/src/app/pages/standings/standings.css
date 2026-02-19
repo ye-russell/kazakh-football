@@ -1,45 +1,60 @@
 .standings {
-  padding: 2rem;
+  padding: 1.5rem;
   max-width: 1000px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.standings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
 }
 
 h1 {
-  margin-bottom: 2rem;
+  margin: 0;
   color: var(--color-text);
+  font-size: 1.6rem;
 }
 
 .loading,
 .error,
 .no-data {
-  padding: 2rem;
+  padding: 1.25rem;
   text-align: center;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 1rem;
 }
 
 .loading {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-muted);
   color: var(--color-muted);
 }
 
 .error {
-  background-color: var(--color-accent-bg);
-  color: var(--color-text);
-  border: 1px solid var(--color-accent);
+  background-color: #fff8e1;
+  color: #5f4300;
+  border: 1px solid #f1d386;
 }
 
 .no-data {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-muted);
   color: var(--color-muted);
 }
 
 .standings-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.95rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-sm);
   overflow: hidden;
+  border: 1px solid var(--color-border);
 }
 
 .legend {
@@ -50,6 +65,27 @@ h1 {
   font-size: 0.85rem;
   color: var(--color-muted);
   margin-bottom: 1rem;
+}
+
+.mobile-segmented {
+  display: none;
+}
+
+.segment-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.segment-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
 }
 
 .legend-item {
@@ -87,13 +123,13 @@ h1 {
 }
 
 .standings-table thead {
-  background-color: var(--color-primary);
+  background: linear-gradient(120deg, #033f74 0%, var(--color-primary) 100%);
   color: white;
   font-weight: 600;
 }
 
 .standings-table th {
-  padding: 1rem;
+  padding: 0.9rem 0.8rem;
   text-align: left;
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -101,16 +137,16 @@ h1 {
 }
 
 .standings-table tbody tr {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid rgba(2, 70, 130, 0.08);
   transition: background-color 0.2s;
 }
 
 .standings-table tbody tr:hover {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-muted);
 }
 
 .standings-table td {
-  padding: 1rem;
+  padding: 0.78rem 0.8rem;
   text-align: left;
 }
 
@@ -118,7 +154,7 @@ h1 {
   font-weight: 600;
   width: 60px;
   text-align: center;
-  background-color: var(--color-surface);
+  background-color: rgba(2, 70, 130, 0.06);
 }
 
 .standings-table td.position-change {
@@ -200,7 +236,7 @@ h1 {
 
 .standings-table td.points {
   font-weight: 600;
-  background-color: var(--color-surface);
+  background-color: rgba(2, 70, 130, 0.06);
   text-align: center;
   width: 60px;
 }
@@ -226,7 +262,7 @@ h1 {
 
 @media (max-width: 900px) {
   .standings {
-    padding: 1.5rem;
+    padding: 1.2rem;
   }
 
   .standings-table {
@@ -236,9 +272,29 @@ h1 {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 400px) {
   .standings {
-    padding: 1.25rem;
+    padding: 1rem;
+  }
+
+  .standings-header {
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.9rem;
+  }
+
+  .mobile-segmented {
+    display: inline-flex;
+    gap: 0.4rem;
+    padding: 0.35rem;
+    margin-bottom: 0;
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+  }
+
+  .legend {
+    margin-top: 0.2rem;
   }
 
   .standings-table th,
@@ -251,5 +307,29 @@ h1 {
   .standings-table td.points {
     width: 48px;
   }
-}
 
+  .standings-table.view-short .col-form,
+  .standings-table.view-short .col-won,
+  .standings-table.view-short .col-drawn,
+  .standings-table.view-short .col-lost,
+  .standings-table.view-short .col-gf,
+  .standings-table.view-short .col-ga,
+  .standings-table.view-short .col-gd {
+    display: none;
+  }
+
+  .standings-table.view-full .col-position,
+  .standings-table.view-full .col-change,
+  .standings-table.view-full .col-team,
+  .standings-table.view-full .col-form,
+  .standings-table.view-full .col-played,
+  .standings-table.view-full .col-won,
+  .standings-table.view-full .col-drawn,
+  .standings-table.view-full .col-lost,
+  .standings-table.view-full .col-gf,
+  .standings-table.view-full .col-ga,
+  .standings-table.view-full .col-gd,
+  .standings-table.view-full .col-points {
+    display: table-cell;
+  }
+}
