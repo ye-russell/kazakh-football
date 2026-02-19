@@ -1,23 +1,36 @@
 <div class="layout">
   <header class="header">
+    <!-- Top-level navigation -->
     <nav class="nav">
-      <a routerLink="/" class="logo">{{ 'app.title' | translate }}</a>
+      <a [routerLink]="homeLink" class="logo">{{ 'app.title' | translate }}</a>
       <ul class="nav-links">
         <li>
-          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'nav.home' | translate }}</a>
+          <a [routerLink]="homeLink" [class.active]="inMatchesSection()">{{ 'nav.league' | translate }}</a>
         </li>
         <li>
-          <a routerLink="/standings" routerLinkActive="active">{{ 'nav.standings' | translate }}</a>
-        </li>
-        <li class="matches-link">
-          <a routerLink="/matches" routerLinkActive="active">{{ 'nav.matches' | translate }}</a>
-        </li>
-        <li>
-          <a routerLink="/teams" routerLinkActive="active">{{ 'nav.teams' | translate }}</a>
+          <a routerLink="/fantasy" [class.active]="inFantasySection()">{{ 'nav.fantasy' | translate }}</a>
         </li>
       </ul>
       <app-language-switcher></app-language-switcher>
     </nav>
+
+    <!-- Matches section sub-navigation -->
+    @if (inMatchesSection()) {
+      <nav class="sub-nav">
+        <ul class="sub-nav-links">
+          <li>
+            <a class="sub-home-desktop" routerLink="/matches-home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'nav.home' | translate }}</a>
+            <a class="sub-home-mobile" routerLink="/matches" routerLinkActive="active">{{ 'nav.matches' | translate }}</a>
+          </li>
+          <li>
+            <a routerLink="/standings" routerLinkActive="active">{{ 'nav.standings' | translate }}</a>
+          </li>
+          <li>
+            <a routerLink="/stats" routerLinkActive="active">{{ 'nav.stats' | translate }}</a>
+          </li>
+        </ul>
+      </nav>
+    }
   </header>
   <main class="main">
     <router-outlet />

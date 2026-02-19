@@ -12,7 +12,9 @@
       "matchesTitle": "Матчи",
       "matchesSubtitle": "Календарь и результаты",
       "tableTitle": "Таблица",
-      "tableSubtitle": "Полная турнирная таблица"
+      "tableSubtitle": "Полная турнирная таблица",
+      "statsTitle": "Статистика",
+      "statsSubtitle": "Статистика игроков и команд"
     },
     "stats": {
       "title": "Статистика",
@@ -23,8 +25,11 @@
   "nav": {
     "home": "Главная",
     "matches": "Матчи",
+    "league": "Лига",
     "standings": "Таблица",
-    "teams": "Команды"
+    "teams": "Команды",
+    "stats": "Статистика",
+    "fantasy": "Фэнтези"
   },
   "matchweek": {
     "label": "Тур",
@@ -112,6 +117,16 @@
     "teamStatsPlaceholder": "Раздел статистики будет добавлен позже.",
     "squad": "Состав",
     "squadPlaceholder": "Раздел состава будет добавлен позже."
+  },
+  "fantasyHome": {
+    "title": "Фэнтези",
+    "comingSoon": "Скоро",
+    "description": "Собери команду мечты, выбери капитана и соревнуйся с друзьями."
+  },
+  "statsPage": {
+    "title": "Статистика",
+    "comingSoon": "Скоро",
+    "description": "Лучшие бомбардиры, ассистенты, форма команд и индивидуальная статистика."
   },
   "competitions": {
     "kpl": "Премьер-Лига Казахстана",

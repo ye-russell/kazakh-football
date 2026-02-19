@@ -100,6 +100,59 @@
   margin: 0 auto;
 }
 
+/* ── Sub-navigation (matches section) ─────────────────────── */
+.sub-nav {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  margin-top: 0.6rem;
+  padding-top: 0.4rem;
+}
+
+.sub-nav-links {
+  display: flex;
+  gap: 0.15rem;
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 1200px;
+
+  li {
+    margin: 0;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    &.active {
+      background-color: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+
+/* Home sub-nav link only visible on desktop */
+@media (max-width: 650px) {
+  .sub-nav-links {
+    justify-content: space-between;
+  }
+  .sub-nav-links .sub-home-desktop {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .header {
     padding: 0.8rem 1rem;
@@ -149,9 +202,5 @@
 @media (max-width: 420px) {
   .logo {
     font-size: 1.25rem;
-  }
-
-  .nav-links .matches-link {
-    display: none;
   }
 }

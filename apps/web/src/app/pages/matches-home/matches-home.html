@@ -1,0 +1,83 @@
+<div class="matches-home">
+  <h1>{{ 'app.title' | translate }}</h1>
+  <p class="subtitle">{{ 'app.description' | translate }}</p>
+
+  <div class="home-grid">
+    <section class="card matchweek-card">
+      <div class="card-header">
+        <h2>{{ 'matchweek.label' | translate }}</h2>
+        <button class="link-button" (click)="viewAllMatches()">{{ 'matches.title' | translate }}</button>
+      </div>
+
+      <app-matchweek-selector
+        [round]="currentRound()"
+        [maxRound]="maxRound()"
+        (roundChanged)="onRoundChanged($event)">
+      </app-matchweek-selector>
+
+      <app-matches-list
+        [matches]="matches()"
+        [loading]="loading()"
+        [error]="error()"
+        [round]="currentRound()">
+      </app-matches-list>
+    </section>
+
+    <section class="card standings-card">
+      <div class="card-header">
+        <h2>{{ 'standings.title' | translate }}</h2>
+        <a class="link-button" [routerLink]="['/standings']">{{ 'standings.title' | translate }}</a>
+      </div>
+
+      @if (standingsLoading()) {
+        <div class="loading">{{ 'standings.loading' | translate }}</div>
+      }
+
+      @if (standingsError()) {
+        <div class="error">{{ standingsError() }}</div>
+      }
+
+      @if (!standingsLoading() && !standingsError() && topStandings().length > 0) {
+        <div class="standings-list">
+          @for (row of topStandings(); track row.team.id; let index = $index) {
+            <div class="standings-row">
+              <div class="rank">{{ index + 1 }}</div>
+              <div class="team">{{ row.team.name }}</div>
+              <div class="points">{{ row.points }} {{ 'standings.points' | translate }}</div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (!standingsLoading() && !standingsError() && topStandings().length === 0) {
+        <div class="no-data">{{ 'home.noStandingsAvailable' | translate }}</div>
+      }
+    </section>
+
+    <section class="card quick-links-card">
+      <h2>{{ 'home.quickLinks.title' | translate }}</h2>
+      <div class="quick-links">
+        <a class="quick-link" [routerLink]="['/stats']">
+          <span class="title">{{ 'home.quickLinks.statsTitle' | translate }}</span>
+          <span class="subtitle">{{ 'home.quickLinks.statsSubtitle' | translate }}</span>
+        </a>
+        <a class="quick-link" [routerLink]="['/matches']">
+          <span class="title">{{ 'home.quickLinks.matchesTitle' | translate }}</span>
+          <span class="subtitle">{{ 'home.quickLinks.matchesSubtitle' | translate }}</span>
+        </a>
+        <a class="quick-link" [routerLink]="['/standings']">
+          <span class="title">{{ 'home.quickLinks.tableTitle' | translate }}</span>
+          <span class="subtitle">{{ 'home.quickLinks.tableSubtitle' | translate }}</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="card stats-card">
+      <h2>{{ 'home.stats.title' | translate }}</h2>
+      <div class="stats-placeholder">
+        <div class="badge">{{ 'home.stats.comingSoon' | translate }}</div>
+        <p>{{ 'home.stats.description' | translate }}</p>
+      </div>
+    </section>
+  </div>
+</div>

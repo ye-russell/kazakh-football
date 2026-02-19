@@ -12,7 +12,9 @@
       "matchesTitle": "Matches",
       "matchesSubtitle": "Fixtures & results",
       "tableTitle": "Table",
-      "tableSubtitle": "Full standings"
+      "tableSubtitle": "Full standings",
+      "statsTitle": "Stats",
+      "statsSubtitle": "Player & team statistics"
     },
     "stats": {
       "title": "Stats",
@@ -23,8 +25,11 @@
   "nav": {
     "home": "Home",
     "matches": "Matches",
+    "league": "League",
     "standings": "Standings",
-    "teams": "Teams"
+    "teams": "Teams",
+    "stats": "Stats",
+    "fantasy": "Fantasy"
   },
   "matchweek": {
     "label": "Matchweek",
@@ -112,6 +117,16 @@
     "teamStatsPlaceholder": "Stats section will be added later.",
     "squad": "Squad",
     "squadPlaceholder": "Squad section will be added later."
+  },
+  "fantasyHome": {
+    "title": "Fantasy",
+    "comingSoon": "Coming soon",
+    "description": "Build your dream squad, pick your captain, and compete with friends."
+  },
+  "statsPage": {
+    "title": "Stats",
+    "comingSoon": "Coming soon",
+    "description": "Top scorers, assists leaders, form guides, and team statistics."
   },
   "competitions": {
     "kpl": "Kazakhstan Premier League",

@@ -1,0 +1,255 @@
+.matches-home {
+  padding: 0 1.5rem 1.5rem;
+  max-width: 1100px;
+}
+
+h1 {
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+  font-size: 2.5rem;
+  display: none;
+}
+
+.subtitle {
+  color: var(--color-muted);
+  font-size: 1rem;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr);
+  grid-template-rows: 3fr;
+  gap: 1.1rem;
+}
+
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.card h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.25rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+  gap: 0.75rem;
+}
+
+.link-button {
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+  border: 1px solid transparent;
+  padding: 0.42rem 0.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+
+.link-button:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+  background: var(--color-accent-bg);
+}
+
+.matchweek-card {
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+}
+
+.standings-card {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+.standings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.standings-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(2, 70, 130, 0.08);
+}
+
+.standings-row .rank {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.standings-row .team {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.standings-row .points {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.quick-links-card {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+.quick-links {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.quick-link {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  background: var(--color-surface);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.quick-link:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.quick-link .title {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.quick-link .subtitle {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin-top: 0.25rem;
+}
+
+.stats-card {
+  grid-column: 1 / 3;
+  grid-row: 3 / 4;
+}
+
+.stats-placeholder {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-muted) 100%);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--color-border);
+}
+
+.stats-placeholder .badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background-color: var(--color-primary-bg);
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.stats-placeholder p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.loading,
+.error,
+.no-data {
+  padding: 1.2rem;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+}
+
+.loading {
+  background-color: var(--color-surface-muted);
+  color: var(--color-muted);
+}
+
+.error {
+  background-color: #fff8e1;
+  color: #5f4300;
+  border: 1px solid #f1d386;
+}
+
+.no-data {
+  background-color: var(--color-surface-muted);
+  color: var(--color-muted);
+}
+
+@media (max-width: 1024px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchweek-card,
+  .standings-card,
+  .quick-links-card,
+  .stats-card {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .home {
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  .card-header {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .standings-row {
+    grid-template-columns: 28px 1fr auto;
+    gap: 0.5rem;
+  }
+
+  .quick-link {
+    padding: 0.85rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .home {
+    padding: 0 1rem 1rem;
+  }
+
+  .card {
+    padding: 0.95rem;
+  }
+}
