@@ -14,7 +14,6 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - Offer a **simple and fast API** for standings, matches, teams, players, and statistics
 - Enable **web + mobile apps** from a single backend
 - Lay a solid foundation for:
-  - league statistics (top scorers, assists, cards, clean sheets)
   - fantasy football
   - news aggregation (Telegram / websites)
   - push notifications
@@ -36,6 +35,7 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - Matches with filtering by competition & round, full detail with events & lineups
 - Players with team filtering
 - Computed standings (points, GD, GF/GA, W/D/L)
+- League statistics: top scorers, assists, yellow/red cards, clean sheets (Prisma `groupBy` aggregates)
 - Health check endpoint (DB connectivity)
 - Global exception filter with consistent error shape
 - Swagger / OpenAPI documentation at `/docs`
@@ -48,7 +48,8 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - Match detail page (events timeline, lineups — starters & bench)
 - Standings page (full table, form guide, position change arrows, short/full toggle)
 - Team detail page (info + recent matches)
-- Stats page (tabbed leaderboards: scorers, assists, cards, clean sheets)
+- Stats page (5-tab leaderboard: scorers, assists, yellow cards, red cards, clean sheets)
+- Top scorer mini-card in home dashboard
 - Fantasy page (placeholder)
 - Trilingual i18n (English, Kazakh, Russian)
 - `OnPush` change detection on all components
@@ -56,7 +57,6 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - Lazy-loaded routes
 
 #### Not yet implemented
-❌ League statistics (top scorers, assists, cards)  
 ❌ Fantasy football  
 ❌ Authentication / user accounts  
 ❌ Write endpoints / admin panel  
@@ -82,24 +82,23 @@ kazakh-football/                    ← pnpm monorepo root
 │   │       ├── teams/              ← GET /teams, /teams/:id
 │   │       ├── matches/            ← GET /matches, /matches/:id
 │   │       ├── standings/          ← GET /standings (computed)
+│   │       ├── stats/              ← GET /stats (aggregated leaderboards)
 │   │       └── players/            ← GET /players, /players/:id
 │   └── web/                        ← Angular 21 SPA
 │       └── src/app/
 │           ├── core/layout/        ← App shell (header, nav, footer)
-│           ├── pages/              ← 8 page components (lazy-loaded)
-│           │   ├── home/           ← Desktop dashboard
-│           │   ├── matches-home/   ← Mobile home (redirected)
+│           ├── pages/              ← 7 routed page components (lazy-loaded)
+│           │   ├── matches-home/   ← Desktop dashboard (fixtures, standings, top scorer)
 │           │   ├── matches/        ← Full match list + round selector
 │           │   ├── match-detail/   ← Single match view
 │           │   ├── standings/      ← League table
-│           │   ├── teams/          ← Teams grid (exists, not routed)
 │           │   ├── team-detail/    ← Individual team page
-│           │   ├── stats/          ← Placeholder
+│           │   ├── stats/          ← 5-tab statistical leaderboards
 │           │   └── fantasy-home/   ← Placeholder
 │           └── shared/
 │               ├── components/     ← MatchList, MatchweekSelector, LanguageSwitcher
 │               ├── interfaces/     ← API type definitions
-│               └── services/       ← API client, league, matches, standings, teams, i18n
+│               └── services/       ← API client, league, matches, standings, teams, stats, i18n
 └── packages/                       ← Shared types / contracts (planned)
 ```
 
@@ -123,7 +122,7 @@ Angular SPA  →  HTTP (REST)  →  NestJS API  →  Prisma ORM  →  PostgreSQL
 | **i18n** | @ngx-translate/core v17 | EN / KK / RU, JSON-based |
 | **Testing (FE)** | Vitest + jsdom | Via `@angular/build:unit-test` |
 | **Backend** | NestJS 11 | REST API, Swagger, class-validator |
-| **ORM** | Prisma v6 | Schema-first, type-safe, migrations |
+| **ORM** | Prisma v5 | Schema-first, type-safe, migrations |
 | **Database** | PostgreSQL | Supabase (managed), no vendor lock-in |
 | **Testing (BE)** | Jest 30 | ts-jest, supertest for e2e |
 | **Tooling** | ESLint, tsx, TypeScript 5.9 | |
@@ -144,6 +143,7 @@ Angular SPA  →  HTTP (REST)  →  NestJS API  →  Prisma ORM  →  PostgreSQL
 | `GET` | `/standings` | `competition` | Computed league table |
 | `GET` | `/players` | `teamId?` | Players, optionally filtered by team |
 | `GET` | `/players/:id` | — | Single player detail |
+| `GET` | `/stats` | `competition?` | Top scorers, assists, cards, clean sheets |
 
 ### Standings computation rules
 - Only finished matches are considered

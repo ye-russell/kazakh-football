@@ -45,10 +45,10 @@ kazakh-football/
 ├── apps/
 │   ├── api/           # NestJS 11 backend (REST API)
 │   │   ├── prisma/    # Schema, migrations (4), seed script
-│   │   └── src/       # 7 domain modules + common filters
+│   │   └── src/       # 8 domain modules + common filters
 │   └── web/           # Angular 21 frontend
 │       ├── public/    # i18n JSONs (en, kk, ru)
-│       └── src/app/   # 8 pages, 3 shared components, 7 services
+│       └── src/app/   # 7 routed pages, 3 shared components, 8 services
 ├── packages/          # Shared DTOs / types (planned, not yet used)
 └── docs/              # This file
 ```
@@ -68,7 +68,7 @@ Benefits:
 | Node.js | 20+ | Runtime |
 | NestJS | 11.x | REST API framework |
 | TypeScript | 5.7+ | Language |
-| Prisma | 6.x | ORM, migrations, type-safe DB access |
+| Prisma | 5.x | ORM, migrations, type-safe DB access |
 | PostgreSQL | — | Database (Supabase-hosted) |
 | Swagger | @nestjs/swagger | API documentation at `/docs` |
 | class-validator | — | DTO validation |
@@ -84,6 +84,7 @@ AppModule
 ├── TeamsModule        → GET /teams, /teams/:id
 ├── MatchesModule      → GET /matches, /matches/:id
 ├── StandingsModule    → GET /standings (computed)
+├── StatsModule        → GET /stats (aggregated leaderboards)
 └── PlayersModule      → GET /players, /players/:id
 ```
 
@@ -213,21 +214,22 @@ Team ──< Player (name, number, position)
 |------|-------|-------|
 | Root | 1 | `App` |
 | Layout | 1 | `Layout` (header, nav, sub-nav, responsive bottom bar) |
-| Pages | 8 | `MatchesHome`, `Matches`, `MatchDetail`, `Standings`, `TeamDetail`, `Stats`, `FantasyHome`, + unused `Home` |
+| Pages | 7 (routed) | `MatchesHome`, `Matches`, `MatchDetail`, `Standings`, `TeamDetail`, `Stats`, `FantasyHome` |
+| Unrouted | 2 | `Home` (unused), `Teams` (exists, not routed) |
 | Shared | 3 | `MatchList`, `MatchweekSelector`, `LanguageSwitcher` |
-| Services | 7 | `ApiClient`, `LeagueService`, `MatchesService`, `StandingsService`, `TeamsService`, `LanguageService`, `TranslateHttpLoader` |
-| Interfaces | 1 file | 8 interfaces/types in `api.interfaces.ts` |
+| Services | 8 | `ApiClient`, `LeagueService`, `MatchesService`, `StandingsService`, `TeamsService`, `StatsService`, `LanguageService`, `TranslateHttpLoader` |
+| Interfaces | 1 file | 11 interfaces/types in `api.interfaces.ts` |
 
 ### Route table
 
 | Path | Component | Notes |
 |------|-----------|-------|
-| `/` | redirect | → `/matches-home` (mobile ≤650px) or `/home` (desktop) |
-| `/home` | `MatchesHome` | Desktop dashboard |
+| `/` | redirect | → `/matches-home` (mobile ≤650px) or `/matches-home` (desktop) |
+| `/matches-home` | `MatchesHome` | Desktop dashboard (fixtures, standings, top scorer) |
 | `/matches` | `Matches` | Full match list + matchweek selector |
 | `/matches/:id` | `MatchDetail` | Match events + lineups |
 | `/standings` | `Standings` | Full league table |
-| `/stats` | `Stats` | **Placeholder** — "Coming soon" |
+| `/stats` | `Stats` | 5-tab leaderboard (scorers, assists, yellow cards, red cards, clean sheets) |
 | `/fantasy` | `FantasyHome` | **Placeholder** — "Coming soon" |
 | `/teams/:id` | `TeamDetail` | Team info + recent matches |
 
@@ -272,7 +274,7 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 | App bootstrap | ✅ | NestJS scaffold, Swagger, ConfigModule |
 | Prisma integration | ✅ | Schema, connection, PrismaModule (global) |
 | Migrations & seed | ✅ | 4 migrations, seed with 12 teams, 12 matches, 48 players, events, lineups |
-| Read endpoints | ✅ | `/league`, `/teams`, `/matches`, `/players`, `/standings`, `/health` |
+| Read endpoints | ✅ | `/league`, `/teams`, `/matches`, `/players`, `/standings`, `/stats`, `/health` |
 | Standings computation | ✅ | Correct sorting, includes 0-match teams, unit tested |
 | Match detail | ✅ | Events (goals/cards/subs) with assist & substitution details, lineups |
 | Stats computation | ✅ | `GET /stats` — top scorers, assists, cards, clean sheets from MatchEvent aggregation |
@@ -310,17 +312,16 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 
 ### What's Missing
 
-1. **League statistics** — No top scorers, assists, cards, or clean sheet stats (data exists in MatchEvent but not aggregated)
-2. **Fantasy football** — Placeholder only; requires auth, new schema, scoring engine, squad builder
-3. **Teams list page** — `TeamsComponent` exists but is not routed (no `/teams` in route table)
-4. **Player profiles** — `/players/:id` endpoint exists but no frontend page for it
-5. **Live polling** — Strategy defined but not implemented (no interval-based data refresh)
-6. **Tests** — Only standings utility has meaningful unit tests; `app.spec.ts` is outdated/broken
-7. **CI/CD** — No GitHub Actions workflows
-8. **Shared packages** — `packages/` directory exists but is empty; DTOs duplicated between FE/BE
-9. **PWA** — Mentioned in vision but no service worker or manifest configured
-10. **News aggregation** — Planned but not started
-11. **Pagination** — No endpoints support pagination; will become a problem at scale
+1. **Fantasy football** — Placeholder only; requires auth, new schema, scoring engine, squad builder
+2. **Teams list page** — `TeamsComponent` exists but is not routed (no `/teams` in route table)
+3. **Player profiles** — `/players/:id` endpoint exists but no frontend page for it
+4. **Live polling** — Strategy defined but not implemented (no interval-based data refresh)
+5. **Tests** — Only standings utility has meaningful unit tests; `app.spec.ts` is outdated/broken
+6. **CI/CD** — No GitHub Actions workflows
+7. **Shared packages** — `packages/` directory referenced but does not exist; DTOs duplicated between FE/BE
+8. **PWA** — Mentioned in vision but no service worker or manifest configured
+9. **News aggregation** — Planned but not started
+10. **Pagination** — No endpoints support pagination; will become a problem at scale
 
 ### What Can Be Improved
 
@@ -329,7 +330,7 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 3. **Caching** — Manual `Map + shareReplay` pattern is repeated in every service; could be a reusable utility or interceptor
 4. **Error recovery** — Cache entries are deleted on error, but there's no retry logic or user-facing retry button
 5. **Test coverage** — Only `standings.utils.spec.ts` has real tests; frontend test setup exists (Vitest) but is unused
-6. **Shared types** — Frontend `api.interfaces.ts` and backend Prisma types are manually kept in sync; should use `packages/shared`
+6. **Shared types** — Frontend `api.interfaces.ts` and backend Prisma types are manually kept in sync; should create `packages/shared`
 7. **API response typing** — Backend returns raw Prisma objects; explicit response DTOs would improve API contract stability
 8. **Bundle size monitoring** — Production budgets configured but no actual production build pipeline
 9. **Accessibility** — Basic focus styles exist but no ARIA labels on interactive elements, no skip navigation link
@@ -350,67 +351,36 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 
 ## 13. Next Development Steps
 
-### Step 1: League Statistics (Phase 2A)
+### ✅ League Statistics (Phase 2 — Complete)
+
+The stats feature is fully implemented across backend and frontend.
 
 #### Backend — `GET /stats?competition=<code>`
 
-**Purpose**: Aggregate `MatchEvent` data into league-wide statistical leaderboards.
-
-**Response shape** (proposed):
-```typescript
-interface LeagueStats {
-  competition: string;
-  season: number;
-  topScorers: PlayerStat[];     // goals scored (from MatchEvent type=goal)
-  topAssists: PlayerStat[];     // assists (from MatchEvent assistPlayerId)
-  mostYellowCards: PlayerStat[]; // yellow cards
-  mostRedCards: PlayerStat[];    // red cards
-  cleanSheets: TeamStat[];      // matches where team conceded 0 goals
-}
-
-interface PlayerStat {
-  playerId: string;
-  playerName: string;
-  teamId: string;
-  teamName: string;
-  count: number;
-}
-
-interface TeamStat {
-  teamId: string;
-  teamName: string;
-  count: number;
-}
-```
-
-**Implementation plan**:
-1. Create `StatsModule` (controller + service)
-2. Add `GetStatsDto` with `competition` validation
-3. Aggregate queries:
-   - Top scorers: `GROUP BY playerId WHERE type = 'goal'`, count, order desc
-   - Top assists: `GROUP BY assistPlayerId WHERE assistPlayerId IS NOT NULL`, count, order desc
-   - Yellow cards: `GROUP BY playerId WHERE type = 'yellow_card'`, count, order desc
-   - Red cards: `GROUP BY playerId WHERE type = 'red_card'`, count, order desc
-   - Clean sheets: For each team, count matches where opponent scored 0 (finished matches only)
-4. Include player name + team name in response (join through relations)
-5. Add Swagger decorators
+- **StatsModule** (controller + service) with `GetStatsDto` validation (defaults to `kpl`)
+- Aggregates `MatchEvent` data using Prisma `groupBy` queries (top 20 per category)
+- **Top scorers**: goals grouped by `playerId`
+- **Top assists**: events grouped by `assistPlayerId`
+- **Yellow/red cards**: events grouped by `playerId` filtered by type
+- **Clean sheets**: goalkeeper-level tracking — finds GK from `MatchLineup`, counts matches where opponent scored 0
+- Response includes `playerName`, `teamName`, `teamShortName`, and `count` for each entry
+- Swagger-documented
 
 #### Frontend — Stats Page
 
-**Implementation plan**:
-1. Create `StatsService` with `getStats(competition: string)` method
-2. Replace `StatsComponent` placeholder with real content:
-   - Tab/segment control: Scorers | Assists | Cards | Clean Sheets
-   - Sortable leaderboard table for each category
-   - Player rows link to future player profile page
-   - Team names link to `/teams/:id`
-3. Add stats summary cards to home dashboard (Golden Boot leader, etc.)
-4. Add i18n keys for stats labels in all 3 languages
-5. Add stats data to team detail page (team's top scorer, etc.)
+- **StatsService** with `getStats(competition)` method and `shareReplay` caching
+- **StatsComponent**: 5-tab leaderboard (Scorers, Assists, Yellow Cards, Red Cards, Clean Sheets)
+- Signal-based state with `computed()` to derive active tab rows
+- Medal emojis (🥇🥈🥉) for top 3 in each category
+- Team names link to `/teams/:id`
+- Loading/error/empty states
+- Mobile-responsive at 500px breakpoint
+- **Dashboard integration**: `MatchesHome` shows top 3 scorers mini-card
+- i18n keys added to all 3 languages (EN, KK, RU)
 
 ---
 
-### Step 2: Fantasy Football (Phase 2B)
+### Step 1: Fantasy Football (Phase 3 — Next)
 
 #### Database schema additions
 
@@ -546,19 +516,21 @@ model Player {
 The project has successfully transitioned from idea to a **working backend platform** and a **functional, responsive web frontend**. The hardest technical risks (DB, schema, migrations, connectivity) are resolved. The system provides a usable UI for core browsing flows across 3 languages.
 
 ### What's solid
-- Full read-only API with 10 endpoints
+- Full read-only API with 11 endpoints (including stats aggregation)
 - Computed standings with correct football rules (tested)
+- League statistics: 5 leaderboard categories with Prisma `groupBy` aggregates
 - Responsive SPA with adaptive mobile/desktop navigation
 - Match detail with events & lineups
+- Stats page with 5-tab leaderboard and dashboard integration
 - Trilingual i18n
 - Realistic seed data
 
 ### What needs attention next
-1. **League statistics** — highest-value feature with lowest effort (data already exists in MatchEvents)
-2. **Fantasy football** — requires auth, new schema, scoring engine, and significant frontend work
-3. **Technical debt** — duplicate components, missing tests, broken app.spec.ts, empty packages/ dir
-4. **Teams page routing** — component exists but isn't accessible
-5. **Player profiles** — endpoint exists, frontend page doesn't
+1. **Fantasy football** — requires auth, new schema, scoring engine, and significant frontend work
+2. **Technical debt** — duplicate components, missing tests, broken app.spec.ts, `packages/` directory doesn't exist
+3. **Teams page routing** — component exists but isn't accessible
+4. **Player profiles** — endpoint exists, frontend page doesn't
+5. **Live polling** — strategy defined but not implemented
 
-The next logical phase is **statistics (quick win) → fantasy (big feature)**, with ongoing cleanup of technical debt.
+The next logical phase is **fantasy football (big feature)**, with ongoing cleanup of technical debt.
 
