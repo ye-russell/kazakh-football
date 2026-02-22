@@ -115,3 +115,29 @@ export interface Standing {
   goalDiff: number;
   points: number;
 }
+
+/**
+ * Individual player statistic entry (scorer, assist, card)
+ * Part of LeagueStats response
+ */
+export interface PlayerStat {
+  playerId: string;
+  playerName: string;
+  teamId: string;
+  teamName: string;
+  teamShortName: string;
+  count: number;
+}
+
+/**
+ * Full league statistics from GET /stats
+ */
+export interface LeagueStats {
+  competition: string;
+  season: number;
+  topScorers: PlayerStat[];
+  topAssists: PlayerStat[];
+  mostYellowCards: PlayerStat[];
+  mostRedCards: PlayerStat[];
+  cleanSheets: PlayerStat[];
+}

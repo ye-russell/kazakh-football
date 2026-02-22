@@ -9,6 +9,7 @@ import { MatchesModule } from './matches/matches.module';
 import { StandingsModule } from './standings/standings.module';
 import { HealthModule } from './health/health.module';
 import { PlayersModule } from './players/players.module';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PlayersModule } from './players/players.module';
     MatchesModule,
     StandingsModule,
     PlayersModule,
+    StatsModule,
     HealthModule,
   ],
   controllers: [AppController],

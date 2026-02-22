@@ -4,9 +4,10 @@ import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
 import { MatchesService } from '../../shared/services/matches.service';
 import { StandingsService } from '../../shared/services/standings.service';
 import { LeagueService } from '../../shared/services/league.service';
+import { StatsService } from '../../shared/services/stats.service';
 import { MatchweekSelector } from '../../shared/components/matchweek-selector/matchweek-selector';
 import { MatchesList } from '../../shared/components/matches-list/matches-list';
-import { Match, Standing } from '../../shared/interfaces/api.interfaces';
+import { Match, Standing, PlayerStat } from '../../shared/interfaces/api.interfaces';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
@@ -20,6 +21,7 @@ export class MatchesHome implements OnInit {
   private readonly matchesService = inject(MatchesService);
   private readonly standingsService = inject(StandingsService);
   private readonly leagueService = inject(LeagueService);
+  private readonly statsService = inject(StatsService);
   private readonly router = inject(Router);
 
   protected readonly currentRound = signal(1);
@@ -32,11 +34,16 @@ export class MatchesHome implements OnInit {
   protected readonly standingsLoading = signal(true);
   protected readonly standingsError = signal<string | null>(null);
 
+  protected readonly topScorers = signal<PlayerStat[]>([]);
+  protected readonly statsLoading = signal(true);
+
   protected readonly topStandings = computed(() => this.standings().slice(0, 5));
+  protected readonly topThreeScorers = computed(() => this.topScorers().slice(0, 3));
 
   ngOnInit() {
     this.loadLeague();
     this.loadStandings();
+    this.loadStats();
   }
 
   private loadLeague() {
@@ -94,6 +101,18 @@ export class MatchesHome implements OnInit {
       error: () => {
         this.standingsError.set('Failed to load standings');
         this.standingsLoading.set(false);
+      },
+    });
+  }
+
+  private loadStats() {
+    this.statsService.getStats().subscribe({
+      next: (data) => {
+        this.topScorers.set(data.topScorers);
+        this.statsLoading.set(false);
+      },
+      error: () => {
+        this.statsLoading.set(false);
       },
     });
   }

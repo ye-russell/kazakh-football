@@ -73,11 +73,31 @@
     </section>
 
     <section class="card stats-card">
-      <h2>{{ 'home.stats.title' | translate }}</h2>
-      <div class="stats-placeholder">
-        <div class="badge">{{ 'home.stats.comingSoon' | translate }}</div>
-        <p>{{ 'home.stats.description' | translate }}</p>
+      <div class="card-header">
+        <h2>{{ 'statsPage.tabs.scorers' | translate }}</h2>
+        <a class="link-button" [routerLink]="['/stats']">{{ 'statsPage.title' | translate }}</a>
       </div>
+
+      @if (statsLoading()) {
+        <div class="loading">{{ 'statsPage.loading' | translate }}</div>
+      }
+
+      @if (!statsLoading() && topThreeScorers().length > 0) {
+        <div class="scorers-list">
+          @for (scorer of topThreeScorers(); track scorer.playerId; let i = $index) {
+            <div class="scorer-row">
+              <span class="scorer-medal">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉' }}</span>
+              <span class="scorer-name">{{ scorer.playerName }}</span>
+              <span class="scorer-team">{{ scorer.teamShortName }}</span>
+              <span class="scorer-count">{{ scorer.count }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      @if (!statsLoading() && topThreeScorers().length === 0) {
+        <div class="no-data">{{ 'statsPage.noData' | translate }}</div>
+      }
     </section>
   </div>
 </div>

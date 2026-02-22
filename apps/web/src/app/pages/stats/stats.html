@@ -1,8 +1,64 @@
 <div class="stats-page">
-  <div class="coming-soon-card">
-    <div class="icon">📊</div>
-    <h1>{{ 'statsPage.title' | translate }}</h1>
-    <div class="badge">{{ 'statsPage.comingSoon' | translate }}</div>
-    <p>{{ 'statsPage.description' | translate }}</p>
-  </div>
+  <h1>{{ 'statsPage.title' | translate }}</h1>
+
+  @if (loading()) {
+    <div class="state-message">{{ 'statsPage.loading' | translate }}</div>
+  }
+
+  @if (error()) {
+    <div class="state-message state-error">{{ 'statsPage.error' | translate }}</div>
+  }
+
+  @if (!loading() && !error() && stats()) {
+    <!-- Tab bar -->
+    <div class="tabs" role="tablist" [attr.aria-label]="'statsPage.title' | translate">
+      @for (tab of tabs; track tab) {
+        <button
+          class="tab-btn"
+          role="tab"
+          [class.active]="activeTab() === tab"
+          [attr.aria-selected]="activeTab() === tab"
+          (click)="setTab(tab)">
+          {{ tabKey(tab) | translate }}
+        </button>
+      }
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="leaderboard-card">
+      @if (activePlayerRows().length === 0) {
+        <div class="state-message">{{ 'statsPage.noData' | translate }}</div>
+      } @else {
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th class="col-rank">{{ 'statsPage.headers.rank' | translate }}</th>
+              <th class="col-player">{{ 'statsPage.headers.player' | translate }}</th>
+              <th class="col-team">{{ 'statsPage.headers.team' | translate }}</th>
+              <th class="col-count">{{ countLabel(activeTab()) | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of activePlayerRows(); track row.playerId; let i = $index) {
+              <tr [class.top-three]="i < 3">
+                <td class="col-rank">
+                  @if (i === 0) { <span class="medal gold">🥇</span> }
+                  @else if (i === 1) { <span class="medal silver">🥈</span> }
+                  @else if (i === 2) { <span class="medal bronze">🥉</span> }
+                  @else { <span class="rank-num">{{ i + 1 }}</span> }
+                </td>
+                <td class="col-player">{{ row.playerName }}</td>
+                <td class="col-team">
+                  <a class="team-link" [routerLink]="['/teams', row.teamId]">
+                    {{ row.teamShortName }}
+                  </a>
+                </td>
+                <td class="col-count">{{ row.count }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
 </div>

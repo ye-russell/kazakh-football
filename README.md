@@ -48,7 +48,7 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - Match detail page (events timeline, lineups — starters & bench)
 - Standings page (full table, form guide, position change arrows, short/full toggle)
 - Team detail page (info + recent matches)
-- Stats page (placeholder)
+- Stats page (tabbed leaderboards: scorers, assists, cards, clean sheets)
 - Fantasy page (placeholder)
 - Trilingual i18n (English, Kazakh, Russian)
 - `OnPush` change detection on all components
@@ -261,12 +261,12 @@ Web app: [http://localhost:4200](http://localhost:4200)
 - [x] Trilingual i18n (EN/KK/RU)
 - [x] Seed data for development
 
-### Phase 2 — League Statistics 🔜 (next)
-- [ ] **Backend**: `GET /stats` endpoint — top scorers, top assists, most cards, clean sheets
-- [ ] **Backend**: Aggregate queries from `MatchEvent` data
-- [ ] **Frontend**: Stats page with sortable leaderboard tables
-- [ ] **Frontend**: Integrate stats into home dashboard & team detail
-- [ ] Player profile pages with individual stat summaries
+### Phase 2 — League Statistics ✅ (complete)
+- [x] **Backend**: `GET /stats?competition=kpl` — StatsModule with Prisma `groupBy` aggregates
+- [x] **Backend**: Top scorers, assists, yellow/red cards (from `MatchEvent`), clean sheets (from `Match`)
+- [x] **Frontend**: Stats page with 5-tab leaderboard (medals, team links, mobile-ready)
+- [x] **Frontend**: Top scorer mini-card in home dashboard
+- [x] **i18n**: Stats keys in EN, KK, RU
 
 ### Phase 3 — Fantasy Football 🔜 (next)
 - [ ] **Database**: Fantasy schema (users, fantasy teams, gameweeks, scoring rules)

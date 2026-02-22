@@ -275,6 +275,7 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 | Read endpoints | ✅ | `/league`, `/teams`, `/matches`, `/players`, `/standings`, `/health` |
 | Standings computation | ✅ | Correct sorting, includes 0-match teams, unit tested |
 | Match detail | ✅ | Events (goals/cards/subs) with assist & substitution details, lineups |
+| Stats computation | ✅ | `GET /stats` — top scorers, assists, cards, clean sheets from MatchEvent aggregation |
 | Error handling | ✅ | Global exception filter, DTO validation |
 
 ### Frontend — ✅ MVP Complete
@@ -289,7 +290,7 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 | Standings | ✅ | Full table, form guide, position change, short/full toggle |
 | Team detail | ✅ | Team info, recent matches |
 | i18n | ✅ | 3 languages with persistent selection |
-| Stats page | 🔲 | Placeholder only |
+| Stats page | ✅ | Tabbed leaderboards — scorers, assists, yellow/red cards, clean sheets |
 | Fantasy | 🔲 | Placeholder only |
 
 ---

@@ -151,29 +151,53 @@ h1 {
 }
 
 .stats-placeholder {
-  margin-top: 1rem;
-  padding: 1.25rem;
-  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-muted) 100%);
-  border-radius: var(--radius-sm);
-  border: 1px dashed var(--color-border);
+  display: none; /* replaced by real scorer list */
 }
 
-.stats-placeholder .badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  background-color: var(--color-primary-bg);
-  color: var(--color-primary);
-  font-weight: 600;
-  margin-bottom: 0.75rem;
+.scorers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.stats-placeholder p {
-  margin: 0;
+.scorer-row {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.scorer-row:last-child {
+  border-bottom: none;
+}
+
+.scorer-medal {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.scorer-name {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scorer-team {
+  font-size: 0.78rem;
   color: var(--color-muted);
+}
+
+.scorer-count {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 1.5rem;
+  text-align: right;
 }
 
 .loading,

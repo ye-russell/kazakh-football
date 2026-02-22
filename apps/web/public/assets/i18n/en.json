@@ -124,9 +124,27 @@
     "description": "Build your dream squad, pick your captain, and compete with friends."
   },
   "statsPage": {
-    "title": "Stats",
-    "comingSoon": "Coming soon",
-    "description": "Top scorers, assists leaders, form guides, and team statistics."
+    "title": "Statistics",
+    "loading": "Loading statistics...",
+    "error": "Failed to load statistics",
+    "noData": "No data available yet",
+    "tabs": {
+      "scorers": "Scorers",
+      "assists": "Assists",
+      "yellowCards": "Yellow Cards",
+      "redCards": "Red Cards",
+      "cleanSheets": "Clean Sheets"
+    },
+    "headers": {
+      "rank": "#",
+      "player": "Player",
+      "team": "Team",
+      "goals": "Goals",
+      "assists": "Assists",
+      "yellowCards": "YC",
+      "redCards": "RC",
+      "cleanSheets": "CS"
+    }
   },
   "competitions": {
     "kpl": "Kazakhstan Premier League",
