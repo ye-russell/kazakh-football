@@ -2,7 +2,7 @@
 
 **Kazakh Football** is an independent, community-driven platform that provides structured football data and a modern web experience for Kazakhstan football competitions.
 
-The project starts with a **clean, reliable data layer** (fixtures, results, standings) and is designed to evolve into a **full football hub** including news aggregation, notifications, and fantasy features.
+The project starts with a **clean, reliable data layer** (fixtures, results, standings) and is designed to evolve into a **full football hub** including league statistics, news aggregation, notifications, and fantasy features.
 
 > ⚠️ This project is **not affiliated with**, **endorsed by**, or **sponsored by** the Kazakhstan Football Federation (KFF) or any football club.
 
@@ -11,111 +11,178 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 ## 🎯 Goals
 
 - Provide a **modern, reliable source of football data** for Kazakhstan leagues
-- Offer a **simple and fast API** for standings, matches, and teams
+- Offer a **simple and fast API** for standings, matches, teams, players, and statistics
 - Enable **web + mobile apps** from a single backend
 - Lay a solid foundation for:
+  - league statistics (top scorers, assists, cards, clean sheets)
+  - fantasy football
   - news aggregation (Telegram / websites)
   - push notifications
-  - fantasy football
   - premium features
 
 ---
 
-## 🧩 Scope (MVP)
+## 🧩 Current Scope
 
 ### Supported competitions
 - Kazakhstan Premier League (KPL)
-- First League (planned / optional)
+- First League (schema ready, data planned)
 
-### MVP features
-- League metadata (season, competitions)
-- Teams and team detail pages
-- Matches (by competition and round) + match detail page
-- Players, match events (goals/cards/subs), and starting lineups
-- Automatically computed standings
-- Responsive web UI with core navigation and layouts
+### Implemented features
 
-❌ No authentication  
-❌ No write endpoints  
-❌ No logos or trademarks  
+#### Backend (NestJS REST API)
+- League metadata (season, competitions, current/max round)
+- Teams CRUD (list + detail)
+- Matches with filtering by competition & round, full detail with events & lineups
+- Players with team filtering
+- Computed standings (points, GD, GF/GA, W/D/L)
+- Health check endpoint (DB connectivity)
+- Global exception filter with consistent error shape
+- Swagger / OpenAPI documentation at `/docs`
+- Prisma ORM with migrations & seed data (12 teams, 12 matches, 48 players, events, lineups)
+
+#### Frontend (Angular 21 SPA)
+- Responsive mobile-first layout with sticky header & bottom nav
+- Home dashboard (matchweek fixtures, top 5 standings, quick links)
+- Matches page with matchweek round selector
+- Match detail page (events timeline, lineups — starters & bench)
+- Standings page (full table, form guide, position change arrows, short/full toggle)
+- Team detail page (info + recent matches)
+- Stats page (placeholder)
+- Fantasy page (placeholder)
+- Trilingual i18n (English, Kazakh, Russian)
+- `OnPush` change detection on all components
+- Signal-based state management
+- Lazy-loaded routes
+
+#### Not yet implemented
+❌ League statistics (top scorers, assists, cards)  
+❌ Fantasy football  
+❌ Authentication / user accounts  
+❌ Write endpoints / admin panel  
+❌ Push notifications  
+❌ Teams list page (component exists, not routed)  
+❌ Player profile pages  
+❌ News aggregation  
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-Monorepo (pnpm workspaces)
+kazakh-football/                    ← pnpm monorepo root
+├── apps/
+│   ├── api/                        ← NestJS REST API (Node.js 20+)
+│   │   ├── prisma/                 ← Schema, migrations, seed
+│   │   └── src/
+│   │       ├── common/filters/     ← Global HTTP exception filter
+│   │       ├── prisma/             ← PrismaModule (global)
+│   │       ├── health/             ← GET /health
+│   │       ├── league/             ← GET /league
+│   │       ├── teams/              ← GET /teams, /teams/:id
+│   │       ├── matches/            ← GET /matches, /matches/:id
+│   │       ├── standings/          ← GET /standings (computed)
+│   │       └── players/            ← GET /players, /players/:id
+│   └── web/                        ← Angular 21 SPA
+│       └── src/app/
+│           ├── core/layout/        ← App shell (header, nav, footer)
+│           ├── pages/              ← 8 page components (lazy-loaded)
+│           │   ├── home/           ← Desktop dashboard
+│           │   ├── matches-home/   ← Mobile home (redirected)
+│           │   ├── matches/        ← Full match list + round selector
+│           │   ├── match-detail/   ← Single match view
+│           │   ├── standings/      ← League table
+│           │   ├── teams/          ← Teams grid (exists, not routed)
+│           │   ├── team-detail/    ← Individual team page
+│           │   ├── stats/          ← Placeholder
+│           │   └── fantasy-home/   ← Placeholder
+│           └── shared/
+│               ├── components/     ← MatchList, MatchweekSelector, LanguageSwitcher
+│               ├── interfaces/     ← API type definitions
+│               └── services/       ← API client, league, matches, standings, teams, i18n
+└── packages/                       ← Shared types / contracts (planned)
+```
 
-apps/web      → Angular PWA (Web + Mobile via Capacitor)
-apps/api      → NestJS REST API
-packages/*    → Shared types / contracts (planned)
-
-Angular / PWA / Mobile
-        ↓
-     REST API
-        ↓
-   NestJS (TypeScript)
-        ↓
-   PostgreSQL (Supabase)
+### Data flow
+```
+Angular SPA  →  HTTP (REST)  →  NestJS API  →  Prisma ORM  →  PostgreSQL (Supabase)
+    ↑                                                              ↑
+ Signals + OnPush                                          Managed cloud DB
+ @ngx-translate (i18n)                                     Human-in-the-loop updates
 ```
 
 ---
 
 ## 🧪 Technology Stack
 
-### Monorepo
-- pnpm workspaces
-- Single GitHub repository
-
-### Frontend (apps/web)
-- Angular (latest stable)
-- Standalone components
-- Signals for state management
-- Responsive layout (mobile-first)
-- PWA
-- Capacitor (Android / iOS)
-
-### Backend (apps/api)
-- Node.js 20+
-- NestJS
-- TypeScript
-- Prisma ORM
-- PostgreSQL (Supabase)
-- Swagger / OpenAPI
-
-### Database
-- Managed PostgreSQL via Supabase
-- No proprietary extensions
-- Standings are **computed**, not stored
-
-### Tooling
-- pnpm
-- ESLint
-- class-validator
-- GitHub Actions (planned)
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| **Monorepo** | pnpm workspaces | Single repo, shared deps |
+| **Frontend** | Angular 21.1 | Standalone components, signals, OnPush, lazy routes |
+| **Styling** | Plain CSS | Custom properties (design tokens), mobile-first |
+| **i18n** | @ngx-translate/core v17 | EN / KK / RU, JSON-based |
+| **Testing (FE)** | Vitest + jsdom | Via `@angular/build:unit-test` |
+| **Backend** | NestJS 11 | REST API, Swagger, class-validator |
+| **ORM** | Prisma v6 | Schema-first, type-safe, migrations |
+| **Database** | PostgreSQL | Supabase (managed), no vendor lock-in |
+| **Testing (BE)** | Jest 30 | ts-jest, supertest for e2e |
+| **Tooling** | ESLint, tsx, TypeScript 5.9 | |
 
 ---
 
-## 📡 API (Read-only)
+## 📡 API Reference (Read-only)
 
-### Endpoints
-```
-GET /league
-GET /teams
-GET /players
-GET /matches?competition=kpl&round=1
-GET /matches/:id
-GET /standings?competition=kpl
-```
+| Method | Endpoint | Query Params | Description |
+|--------|----------|-------------|-------------|
+| `GET` | `/` | — | Hello world |
+| `GET` | `/health` | — | DB connectivity check |
+| `GET` | `/league` | — | Competitions with `currentRound` / `maxRound` |
+| `GET` | `/teams` | — | All teams (ordered by name) |
+| `GET` | `/teams/:id` | — | Single team detail |
+| `GET` | `/matches` | `competition`, `round?` | Matches filtered by competition & round |
+| `GET` | `/matches/:id` | — | Match detail + events + lineups |
+| `GET` | `/standings` | `competition` | Computed league table |
+| `GET` | `/players` | `teamId?` | Players, optionally filtered by team |
+| `GET` | `/players/:id` | — | Single player detail |
 
-### Standings rules
+### Standings computation rules
 - Only finished matches are considered
 - Points: win = 3, draw = 1, loss = 0
-- Sorting:
-  1. points (desc)
-  2. goal difference (desc)
-  3. goals scored (desc)
-  4. team name (asc)
+- Sorting: points (desc) → goal difference (desc) → goals scored (desc) → team name (asc)
+
+### Error response shape
+```json
+{
+  "statusCode": 400,
+  "timestamp": "2026-02-22T12:00:00.000Z",
+  "path": "/standings",
+  "method": "GET",
+  "message": "competition must be a string"
+}
+```
+
+---
+
+## 📊 Data Model
+
+```
+Competition ──< Match >── Team (home/away)
+                 │
+                 ├──< MatchEvent (goal, yellow_card, red_card, substitution)
+                 │        │
+                 │        └── Player (scorer, assist, subIn, subOut)
+                 │
+                 └──< MatchLineup
+                          └── Player (isStarter, position)
+
+Team ──< Player
+```
+
+Key constraints:
+- `homeTeamId ≠ awayTeamId` (database-level)
+- `(matchId, playerId)` unique on lineups
+- Cascade delete: Match → Events & Lineups
+- Indexes on all foreign keys + `(competitionId, round)`, `(competitionId, kickoffAt)`, `status`
 
 ---
 
@@ -126,10 +193,7 @@ GET /standings?competition=kpl
 - No club or league logos are included
 - News (future) will be **linked, not copied**
 
-This keeps the project:
-- legally safe
-- easy to maintain
-- community-friendly
+This keeps the project legally safe, easy to maintain, and community-friendly.
 
 ---
 
@@ -139,6 +203,7 @@ This keeps the project:
 - No authentication in v1
 - No secrets committed to the repository
 - Environment variables managed externally
+- CORS enabled globally
 
 ---
 
@@ -146,7 +211,7 @@ This keeps the project:
 
 ### Requirements
 - Node.js 20+
-- pnpm
+- pnpm 10+
 - PostgreSQL (local or Supabase)
 
 ### Monorepo setup
@@ -156,63 +221,82 @@ pnpm install
 
 ### Backend (apps/api)
 ```bash
+# Run migrations
 pnpm --filter api prisma:migrate
+
+# Seed sample data (12 teams, 12 matches, 48 players, events, lineups)
 pnpm --filter api prisma:seed
+
+# Start dev server (port 3000)
 pnpm --filter api start:dev
 ```
 
 ### Frontend (apps/web)
 ```bash
+# Start dev server (port 4200)
 pnpm --filter web start
 ```
 
 ### Environment variables
 Create `.env` inside `apps/api`:
 ```env
-DATABASE_URL=postgresql://...
-DIRECT_URL=postgresql://... # direct (non-pooler) connection for migrations/seeds
+DATABASE_URL=postgresql://...      # pooler connection string
+DIRECT_URL=postgresql://...        # direct connection (for migrations/seeds)
 PORT=3000
+HOST=0.0.0.0
 ```
 
-Swagger UI will be available at:
-```
-http://localhost:3000/docs
-```
+Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)  
+Web app: [http://localhost:4200](http://localhost:4200)
 
 ---
 
 ## 🛣 Roadmap
 
-### Phase 1 — Data Platform + Web MVP (current)
-- Stable API
-- Standings computation
-- Responsive web UI
-- Public release
+### Phase 1 — Data Platform + Web MVP ✅ (complete)
+- [x] Stable read-only API (league, teams, matches, standings, players)
+- [x] Computed standings with proper football sorting
+- [x] Match events & lineups
+- [x] Responsive web UI (home, matches, standings, match detail, team detail)
+- [x] Trilingual i18n (EN/KK/RU)
+- [x] Seed data for development
 
-### Phase 2 — News Aggregation
-- Telegram & website links
-- Source attribution
-- Outbound traffic only
+### Phase 2 — League Statistics 🔜 (next)
+- [ ] **Backend**: `GET /stats` endpoint — top scorers, top assists, most cards, clean sheets
+- [ ] **Backend**: Aggregate queries from `MatchEvent` data
+- [ ] **Frontend**: Stats page with sortable leaderboard tables
+- [ ] **Frontend**: Integrate stats into home dashboard & team detail
+- [ ] Player profile pages with individual stat summaries
 
-### Phase 3 — Mobile Experience
-- PWA
-- Android & iOS (Capacitor)
+### Phase 3 — Fantasy Football 🔜 (next)
+- [ ] **Database**: Fantasy schema (users, fantasy teams, gameweeks, scoring rules)
+- [ ] **Backend**: Authentication (JWT or Supabase Auth)
+- [ ] **Backend**: Fantasy CRUD endpoints (create team, transfers, points calculation)
+- [ ] **Frontend**: Fantasy hub — pick team, view leaderboard, gameweek scores
+- [ ] **Frontend**: Squad builder UI with budget constraints
+- [ ] Scoring engine (goals, assists, clean sheets, cards, bonus)
 
-### Phase 4 — Advanced Features
-- Push notifications
-- User preferences
-- Fantasy football
-- Premium subscriptions
+### Phase 4 — Mobile Experience
+- [ ] PWA manifest & service worker
+- [ ] Android & iOS wrappers (Capacitor)
+- [ ] Push notifications
+
+### Phase 5 — Content & Community
+- [ ] News aggregation (Telegram & website links, attribution-first)
+- [ ] User preferences & settings
+- [ ] Public API tiers
+- [ ] Premium features & partnerships
 
 ---
 
 ## 🤝 Contributing
 
 Contributions are welcome:
-- bug fixes
-- improvements
-- additional competitions
-- documentation
+- Bug fixes
+- Improvements
+- Additional competitions
+- Documentation
+- Translations (i18n)
 
 Please open an issue or pull request.
 
