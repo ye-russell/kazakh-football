@@ -92,7 +92,14 @@
               }
             </td>
             <td class="team-name col-team">
-              <span class="team-link">{{ row.team.name }}</span>
+              <button
+                type="button"
+                class="team-link"
+                (click)="openTeamPage(row.team.id)"
+                [attr.aria-label]="'Open team page: ' + row.team.name"
+              >
+                {{ row.team.name }}
+              </button>
             </td>
             <td class="last-result col-form" aria-label="Last five match results">
               <div class="form-dots" role="group">

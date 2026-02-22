@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
 import { StandingsService } from '../../shared/services/standings.service';
@@ -19,6 +20,7 @@ type StandingsMobileView = 'short' | 'full';
 export class Standings implements OnInit {
   private readonly standingsService = inject(StandingsService);
   private readonly matchesService = inject(MatchesService);
+  private readonly router = inject(Router);
 
   protected readonly standings = signal<Standing[]>([]);
   protected readonly matches = signal<Match[]>([]);
@@ -46,6 +48,10 @@ export class Standings implements OnInit {
 
   protected setMobileView(view: StandingsMobileView) {
     this.mobileView.set(view);
+  }
+
+  protected openTeamPage(teamId: string) {
+    void this.router.navigate(['/teams', teamId]);
   }
 
   private loadStandings() {

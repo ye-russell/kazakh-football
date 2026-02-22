@@ -109,7 +109,7 @@
     "position": "Позиция"
   },
   "teamDetail": {
-    "backToTeams": "Назад к командам",
+    "backToTeams": "Назад к таблице",
     "loading": "Загрузка команды...",
     "recentMatches": "Последние матчи",
     "noMatchesFound": "Матчи не найдены",

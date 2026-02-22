@@ -73,6 +73,30 @@ button {
 	border-radius: 8px;
 }
 
+@media (hover: none) and (pointer: coarse) {
+	a,
+	button,
+	[type='button'],
+	[type='submit'],
+	[type='reset'] {
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	a:focus,
+	a:focus-visible,
+	button:focus,
+	button:focus-visible,
+	[type='button']:focus,
+	[type='button']:focus-visible,
+	[type='submit']:focus,
+	[type='submit']:focus-visible,
+	[type='reset']:focus,
+	[type='reset']:focus-visible {
+		outline: none;
+		box-shadow: none;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	* {
 		animation-duration: 0.01ms !important;

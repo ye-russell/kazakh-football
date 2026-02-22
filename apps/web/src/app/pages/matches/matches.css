@@ -1,9 +1,7 @@
 .matches {
   padding: 1.5rem;
-  max-width: 980px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
 }
 

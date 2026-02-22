@@ -38,6 +38,12 @@
   &:hover {
     color: var(--color-accent);
   }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
 }
 
 .nav-links {
@@ -64,6 +70,12 @@
       background-color: rgba(255, 255, 255, 0.14);
     }
 
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+      background-color: rgba(255, 255, 255, 0.16);
+    }
+
     &.active {
       background-color: var(--color-accent);
       color: var(--color-text);
@@ -76,18 +88,18 @@
   flex: 0 0 auto;
 }
 
-::ng-deep .language-switcher button {
+::ng-deep .language-switcher .current-language {
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
 
-::ng-deep .language-switcher button:hover {
+::ng-deep .language-switcher .current-language:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
 }
 
-::ng-deep .language-switcher button.active {
+::ng-deep .language-switcher.open .current-language {
   border-color: var(--color-accent);
   background: var(--color-accent);
   color: var(--color-text);
@@ -109,7 +121,7 @@
 
 .sub-nav-links {
   display: flex;
-  gap: 0.15rem;
+  gap: 0.5rem;
   list-style: none;
   margin: 0 auto;
   padding: 0;
@@ -117,11 +129,15 @@
 
   li {
     margin: 0;
+    display: flex;
+    gap: 0.5rem;
   }
 
   a {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    min-width: 80px;
     color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     padding: 0.3rem 0.75rem;
@@ -132,6 +148,13 @@
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+      background-color: rgba(255, 255, 255, 0.14);
       color: #fff;
     }
 
@@ -146,7 +169,7 @@
 /* Home sub-nav link only visible on desktop */
 @media (max-width: 650px) {
   .sub-nav-links {
-    justify-content: space-between;
+    justify-content: center;
   }
   .sub-nav-links .sub-home-desktop {
     display: none;
@@ -175,18 +198,14 @@
   }
 
   .nav {
-    flex-direction: column;
     align-items: center;
-    width: 100%;
   }
 
   .logo {
-    width: 100%;
     text-align: center;
   }
 
   .nav-links {
-    width: 100%;
     justify-content: center;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -202,5 +221,38 @@
 @media (max-width: 420px) {
   .logo {
     font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .nav-links {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom));
+    background: rgba(2, 58, 107, 0.96);
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.25);
+    backdrop-filter: blur(6px);
+  }
+
+  .nav-links li {
+    width: 100px;
+    display: flex;
+  }
+
+  .nav-links a {
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+    padding: 0.6rem 0.7rem;
+  }
+
+  .main {
+    padding-bottom: 5rem;
   }
 }

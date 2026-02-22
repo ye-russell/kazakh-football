@@ -79,8 +79,7 @@
   }
 
   .arrow-btn {
-    padding: 0.45rem 0.72rem;
-    font-size: 0.88rem;
+    padding: 0.45rem;
   }
 
   .arrow-text {
@@ -89,5 +88,6 @@
 
   .arrow-icon {
     font-size: 1.4rem;
+    line-height: 1.4;
   }
 }
