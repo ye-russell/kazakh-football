@@ -1,0 +1,93 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>
+      @if (mode() === 'login') {
+        {{ 'auth.loginTitle' | translate }}
+      } @else {
+        {{ 'auth.registerTitle' | translate }}
+      }
+    </h1>
+
+    @if (error()) {
+      <div class="error-msg">{{ error() }}</div>
+    }
+
+    <form (ngSubmit)="submit()" class="auth-form" novalidate>
+      @if (mode() === 'register') {
+        <label class="field" [class.has-error]="displayNameError()">
+          <span>{{ 'auth.displayName' | translate }}</span>
+          <input
+            type="text"
+            [ngModel]="displayName()"
+            (ngModelChange)="displayName.set($event)"
+            name="displayName"
+            [placeholder]="'auth.displayNamePlaceholder' | translate" />
+          @if (displayNameError()) {
+            <span class="field-error">{{ displayNameError() }}</span>
+          }
+        </label>
+      }
+
+      <label class="field" [class.has-error]="emailError()">
+        <span>{{ 'auth.email' | translate }}</span>
+        <input
+          type="email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          name="email"
+          [placeholder]="'auth.emailPlaceholder' | translate" />
+        @if (emailError()) {
+          <span class="field-error">{{ emailError() }}</span>
+        }
+      </label>
+
+      <label class="field" [class.has-error]="passwordError()">
+        <span>{{ 'auth.password' | translate }}</span>
+        <input
+          type="password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          name="password"
+          [placeholder]="'auth.passwordPlaceholder' | translate" />
+        @if (passwordError()) {
+          <span class="field-error">{{ passwordError() }}</span>
+        }
+      </label>
+
+      @if (mode() === 'register') {
+        <label class="field" [class.has-error]="confirmPasswordError()">
+          <span>{{ 'auth.confirmPassword' | translate }}</span>
+          <input
+            type="password"
+            [ngModel]="confirmPassword()"
+            (ngModelChange)="confirmPassword.set($event)"
+            name="confirmPassword"
+            [placeholder]="'auth.confirmPasswordPlaceholder' | translate" />
+          @if (confirmPasswordError()) {
+            <span class="field-error">{{ confirmPasswordError() }}</span>
+          }
+        </label>
+      }
+
+      <button type="submit" class="submit-btn" [disabled]="loading()">
+        @if (loading()) {
+          {{ 'auth.submitting' | translate }}
+        } @else if (mode() === 'login') {
+          {{ 'auth.loginBtn' | translate }}
+        } @else {
+          {{ 'auth.registerBtn' | translate }}
+        }
+      </button>
+    </form>
+
+    <div class="toggle-row">
+      @if (mode() === 'login') {
+        <span>{{ 'auth.noAccount' | translate }}</span>
+        <button class="link-btn" (click)="toggleMode()">{{ 'auth.registerLink' | translate }}</button>
+      } @else {
+        <span>{{ 'auth.hasAccount' | translate }}</span>
+        <button class="link-btn" (click)="toggleMode()">{{ 'auth.loginLink' | translate }}</button>
+      }
+    </div>
+  </div>
+</div>

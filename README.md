@@ -33,13 +33,15 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - League metadata (season, competitions, current/max round)
 - Teams CRUD (list + detail)
 - Matches with filtering by competition & round, full detail with events & lineups
-- Players with team filtering
+- Players with team filtering and fantasy pricing
 - Computed standings (points, GD, GF/GA, W/D/L)
 - League statistics: top scorers, assists, yellow/red cards, clean sheets (Prisma `groupBy` aggregates)
+- **Authentication**: JWT-based registration & login (bcrypt password hashing, passport-jwt strategy)
+- **Fantasy Football**: Team creation, squad pick management (budget/position/team-count validation), leaderboard, gameweek scoring engine
 - Health check endpoint (DB connectivity)
 - Global exception filter with consistent error shape
-- Swagger / OpenAPI documentation at `/docs`
-- Prisma ORM with migrations & seed data (12 teams, 12 matches, 48 players, events, lineups)
+- Swagger / OpenAPI documentation at `/docs` (with Bearer auth)
+- Prisma ORM with migrations & seed data (12 teams, 12 matches, 48 players with fantasy prices, events, lineups)
 
 #### Frontend (Angular 21 SPA)
 - Responsive mobile-first layout with sticky header & bottom nav
@@ -50,20 +52,23 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - Team detail page (info + recent matches)
 - Stats page (5-tab leaderboard: scorers, assists, yellow cards, red cards, clean sheets)
 - Top scorer mini-card in home dashboard
-- Fantasy page (placeholder)
+- **Auth page**: Login & registration with client-side validation, password confirmation
+- **Fantasy dashboard**: Team creation, squad overview with formation bar, leaderboard with medals
+- **Squad builder**: Two-panel UI — selected squad (captain/VC/remove) + available players (position filter, team filter, search, budget tracking)
+- Fantasy sub-navigation in layout header
 - Trilingual i18n (English, Kazakh, Russian)
 - `OnPush` change detection on all components
 - Signal-based state management
 - Lazy-loaded routes
 
 #### Not yet implemented
-❌ Fantasy football  
-❌ Authentication / user accounts  
 ❌ Write endpoints / admin panel  
 ❌ Push notifications  
 ❌ Teams list page (component exists, not routed)  
 ❌ Player profile pages  
 ❌ News aggregation  
+❌ Gameweek history UI  
+❌ Transfer window logic  
 
 ---
 
@@ -83,22 +88,26 @@ kazakh-football/                    ← pnpm monorepo root
 │   │       ├── matches/            ← GET /matches, /matches/:id
 │   │       ├── standings/          ← GET /standings (computed)
 │   │       ├── stats/              ← GET /stats (aggregated leaderboards)
-│   │       └── players/            ← GET /players, /players/:id
+│   │       ├── players/            ← GET /players, /players/:id
+│   │       ├── auth/               ← POST /auth/register, /auth/login, GET /auth/profile
+│   │       └── fantasy/            ← Fantasy team CRUD, picks, leaderboard, scoring
 │   └── web/                        ← Angular 21 SPA
 │       └── src/app/
-│           ├── core/layout/        ← App shell (header, nav, footer)
-│           ├── pages/              ← 7 routed page components (lazy-loaded)
+│           ├── core/layout/        ← App shell (header, nav, sub-nav)
+│           ├── pages/              ← 10 routed page components (lazy-loaded)
 │           │   ├── matches-home/   ← Desktop dashboard (fixtures, standings, top scorer)
 │           │   ├── matches/        ← Full match list + round selector
 │           │   ├── match-detail/   ← Single match view
 │           │   ├── standings/      ← League table
 │           │   ├── team-detail/    ← Individual team page
 │           │   ├── stats/          ← 5-tab statistical leaderboards
-│           │   └── fantasy-home/   ← Placeholder
+│           │   ├── auth/           ← Login / Register
+│           │   ├── fantasy-home/   ← Fantasy dashboard & leaderboard
+│           │   └── fantasy-squad/  ← Squad builder (pick players, captain, budget)
 │           └── shared/
 │               ├── components/     ← MatchList, MatchweekSelector, LanguageSwitcher
 │               ├── interfaces/     ← API type definitions
-│               └── services/       ← API client, league, matches, standings, teams, stats, i18n
+│               └── services/       ← API client, league, matches, standings, teams, stats, auth, fantasy
 └── packages/                       ← Shared types / contracts (planned)
 ```
 
@@ -108,6 +117,7 @@ Angular SPA  →  HTTP (REST)  →  NestJS API  →  Prisma ORM  →  PostgreSQL
     ↑                                                              ↑
  Signals + OnPush                                          Managed cloud DB
  @ngx-translate (i18n)                                     Human-in-the-loop updates
+ JWT token (localStorage)                                  Fantasy data stored alongside match data
 ```
 
 ---
@@ -122,6 +132,7 @@ Angular SPA  →  HTTP (REST)  →  NestJS API  →  Prisma ORM  →  PostgreSQL
 | **i18n** | @ngx-translate/core v17 | EN / KK / RU, JSON-based |
 | **Testing (FE)** | Vitest + jsdom | Via `@angular/build:unit-test` |
 | **Backend** | NestJS 11 | REST API, Swagger, class-validator |
+| **Auth** | @nestjs/jwt + passport-jwt | JWT tokens, bcrypt password hashing |
 | **ORM** | Prisma v5 | Schema-first, type-safe, migrations |
 | **Database** | PostgreSQL | Supabase (managed), no vendor lock-in |
 | **Testing (BE)** | Jest 30 | ts-jest, supertest for e2e |
@@ -129,7 +140,9 @@ Angular SPA  →  HTTP (REST)  →  NestJS API  →  Prisma ORM  →  PostgreSQL
 
 ---
 
-## 📡 API Reference (Read-only)
+## 📡 API Reference
+
+### Public endpoints (no auth)
 
 | Method | Endpoint | Query Params | Description |
 |--------|----------|-------------|-------------|
@@ -144,6 +157,26 @@ Angular SPA  →  HTTP (REST)  →  NestJS API  →  Prisma ORM  →  PostgreSQL
 | `GET` | `/players` | `teamId?` | Players, optionally filtered by team |
 | `GET` | `/players/:id` | — | Single player detail |
 | `GET` | `/stats` | `competition?` | Top scorers, assists, cards, clean sheets |
+| `GET` | `/fantasy/leaderboard` | `competition?` | Fantasy leaderboard |
+| `GET` | `/fantasy/players` | `competition?` | Available players with prices |
+| `GET` | `/fantasy/teams/:id` | — | View any fantasy team |
+| `GET` | `/fantasy/teams/:id/gameweeks` | — | Gameweek points history |
+
+### Auth endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/auth/register` | Register new user (email, password, displayName) |
+| `POST` | `/auth/login` | Login with email & password, returns JWT |
+| `GET` | `/auth/profile` | 🔒 Current user profile |
+
+### Protected fantasy endpoints (Bearer token required)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/fantasy/my-team` | 🔒 Current user's fantasy team |
+| `POST` | `/fantasy/teams` | 🔒 Create fantasy team |
+| `PUT` | `/fantasy/teams/:id/picks` | 🔒 Update squad picks (validates budget, positions, captain) |
 
 ### Standings computation rules
 - Only finished matches are considered
@@ -175,12 +208,21 @@ Competition ──< Match >── Team (home/away)
                  └──< MatchLineup
                           └── Player (isStarter, position)
 
-Team ──< Player
+Team ──< Player (name, number, position, price)
+              │
+              └──< FantasyPick
+
+User ──< FantasyTeam ──< FantasyPick ──> Player
+              │
+              └──< FantasyGameweek (round, points)
 ```
 
 Key constraints:
 - `homeTeamId ≠ awayTeamId` (database-level)
 - `(matchId, playerId)` unique on lineups
+- `(userId, competitionId)` unique on fantasy teams
+- `(fantasyTeamId, playerId)` unique on picks
+- `(fantasyTeamId, round)` unique on gameweeks
 - Cascade delete: Match → Events & Lineups
 - Indexes on all foreign keys + `(competitionId, round)`, `(competitionId, kickoffAt)`, `status`
 
@@ -199,8 +241,10 @@ This keeps the project legally safe, easy to maintain, and community-friendly.
 
 ## 🔐 Security & Access
 
-- Public read-only API
-- No authentication in v1
+- Public read-only API for league data
+- JWT authentication for fantasy features (Bearer token)
+- Passwords hashed with bcrypt (10 rounds)
+- Token expiry: 7 days
 - No secrets committed to the repository
 - Environment variables managed externally
 - CORS enabled globally
@@ -244,6 +288,7 @@ DATABASE_URL=postgresql://...      # pooler connection string
 DIRECT_URL=postgresql://...        # direct connection (for migrations/seeds)
 PORT=3000
 HOST=0.0.0.0
+JWT_SECRET=your-secret-key         # required for auth
 ```
 
 Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)  
@@ -268,13 +313,17 @@ Web app: [http://localhost:4200](http://localhost:4200)
 - [x] **Frontend**: Top scorer mini-card in home dashboard
 - [x] **i18n**: Stats keys in EN, KK, RU
 
-### Phase 3 — Fantasy Football 🔜 (next)
-- [ ] **Database**: Fantasy schema (users, fantasy teams, gameweeks, scoring rules)
-- [ ] **Backend**: Authentication (JWT or Supabase Auth)
-- [ ] **Backend**: Fantasy CRUD endpoints (create team, transfers, points calculation)
-- [ ] **Frontend**: Fantasy hub — pick team, view leaderboard, gameweek scores
-- [ ] **Frontend**: Squad builder UI with budget constraints
-- [ ] Scoring engine (goals, assists, clean sheets, cards, bonus)
+### Phase 3 — Fantasy Football ✅ (complete)
+- [x] **Database**: Fantasy schema (User, FantasyTeam, FantasyPick, FantasyGameweek) + player pricing
+- [x] **Backend**: JWT authentication (register, login, profile)
+- [x] **Backend**: Fantasy CRUD endpoints (create team, update picks with full validation, leaderboard)
+- [x] **Backend**: Scoring engine (goals, assists, clean sheets, cards, captain 2×)
+- [x] **Frontend**: Auth page — login/register with client-side validation & password confirmation
+- [x] **Frontend**: Fantasy dashboard — team creation, squad overview, leaderboard
+- [x] **Frontend**: Squad builder — two-panel UI with position/team/search filters, budget tracking, captain/VC selection
+- [x] **Frontend**: Fantasy sub-navigation in layout
+- [x] **i18n**: Full fantasy & auth translations in EN, KK, RU
+- [x] **Seed**: Position-based player pricing with top-team bonus
 
 ### Phase 4 — Mobile Experience
 - [ ] PWA manifest & service worker

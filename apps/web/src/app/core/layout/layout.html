@@ -31,6 +31,20 @@
         </ul>
       </nav>
     }
+
+    <!-- Fantasy section sub-navigation -->
+    @if (inFantasySection()) {
+      <nav class="sub-nav">
+        <ul class="sub-nav-links">
+          <li>
+            <a routerLink="/fantasy" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'fantasy.dashboard' | translate }}</a>
+          </li>
+          <li>
+            <a routerLink="/fantasy/squad" routerLinkActive="active">{{ 'fantasy.mySquad' | translate }}</a>
+          </li>
+        </ul>
+      </nav>
+    }
   </header>
   <main class="main">
     <router-outlet />

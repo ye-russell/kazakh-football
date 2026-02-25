@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:api": "pnpm --dir apps/api start:dev",
+    "dev:web": "pnpm --dir apps/web start"
   },
   "keywords": [],
   "author": "",

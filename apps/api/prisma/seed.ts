@@ -19,6 +19,18 @@ const prisma = new PrismaClient({
 
 type PlayerDef = [name: string, num: number, pos: string];
 
+// Fantasy price by position: GK 4.0-5.5, DF 4.0-6.0, MF 5.0-8.0, FW 6.0-10.0
+// Starters cost more, bench players cost less
+const PRICE_MAP: Record<string, [starter: number, bench: number]> = {
+  GK: [4.5, 4.0],
+  DF: [5.0, 4.5],
+  MF: [6.5, 5.0],
+  FW: [8.0, 6.0],
+};
+
+// Top-team (indices 0,1,4) players get +1.0 bonus
+const TOP_TEAM_INDICES = new Set([0, 1, 4]);
+
 const SQUADS: PlayerDef[][] = [
   /* ─── [0] FC Astana ─── */
   [
@@ -360,12 +372,18 @@ async function main() {
 
   for (let t = 0; t < teams.length; t++) {
     const squad = await Promise.all(
-      SQUADS[t].map(([name, number, position]) =>
-        prisma.player.create({
-          data: { teamId: teams[t].id, name, number, position },
+      SQUADS[t].map(([name, number, position], idx) => {
+        const isStarter = idx < 11;
+        const [starterPrice, benchPrice] = PRICE_MAP[position] ?? [5.0, 4.5];
+        const base = isStarter ? starterPrice : benchPrice;
+        const bonus = TOP_TEAM_INDICES.has(t) ? 1.0 : 0;
+        const price = Math.round((base + bonus) * 10) / 10;
+
+        return prisma.player.create({
+          data: { teamId: teams[t].id, name, number, position, price },
           select: { id: true, name: true },
-        }),
-      ),
+        });
+      }),
     );
     players.push(squad);
   }

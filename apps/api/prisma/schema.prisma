@@ -24,14 +24,22 @@ enum MatchEventType {
   substitution
 }
 
+enum FantasyPickPosition {
+  GK
+  DF
+  MF
+  FW
+}
+
 model Competition {
-  id        String   @id @default(uuid())
-  code      String   @unique
-  name      String
-  season    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  matches   Match[]
+  id           String        @id @default(uuid())
+  code         String        @unique
+  name         String
+  season       Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  matches      Match[]
+  fantasyTeams FantasyTeam[]
 }
 
 model Team {
@@ -81,6 +89,7 @@ model Player {
   name      String
   number    Int?
   position  String?
+  price     Float    @default(5.0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   events    MatchEvent[] @relation("EventPlayer")
@@ -88,6 +97,7 @@ model Player {
   subIns    MatchEvent[] @relation("EventSubInPlayer")
   subOuts   MatchEvent[] @relation("EventSubOutPlayer")
   lineups   MatchLineup[]
+  fantasyPicks FantasyPick[]
 
   @@index([teamId])
   @@index([name])
@@ -137,4 +147,65 @@ model MatchLineup {
   @@index([matchId])
   @@index([teamId])
   @@index([playerId])
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  FANTASY FOOTBALL
+// ═══════════════════════════════════════════════════════════════
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  displayName  String
+  passwordHash String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  fantasyTeams FantasyTeam[]
+}
+
+model FantasyTeam {
+  id            String            @id @default(uuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  competitionId String
+  competition   Competition       @relation(fields: [competitionId], references: [id], onDelete: Restrict)
+  budget        Float             @default(100.0)
+  totalPoints   Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  picks         FantasyPick[]
+  gameweeks     FantasyGameweek[]
+
+  @@unique([userId, competitionId])
+  @@index([userId])
+  @@index([competitionId])
+}
+
+model FantasyPick {
+  id            String              @id @default(uuid())
+  fantasyTeamId String
+  fantasyTeam   FantasyTeam         @relation(fields: [fantasyTeamId], references: [id], onDelete: Cascade)
+  playerId      String
+  player        Player              @relation(fields: [playerId], references: [id], onDelete: Restrict)
+  isCaptain     Boolean             @default(false)
+  isViceCaptain Boolean             @default(false)
+  position      FantasyPickPosition
+  createdAt     DateTime            @default(now())
+
+  @@unique([fantasyTeamId, playerId])
+  @@index([fantasyTeamId])
+  @@index([playerId])
+}
+
+model FantasyGameweek {
+  id            String      @id @default(uuid())
+  fantasyTeamId String
+  fantasyTeam   FantasyTeam @relation(fields: [fantasyTeamId], references: [id], onDelete: Cascade)
+  round         Int
+  points        Int         @default(0)
+  createdAt     DateTime    @default(now())
+
+  @@unique([fantasyTeamId, round])
+  @@index([fantasyTeamId])
 }

@@ -11,7 +11,9 @@ export const routes: Routes = [
       { path: 'matches/:id', loadComponent: () => import('./pages/match-detail/match-detail').then((m) => m.MatchDetail) },
       { path: 'standings', loadComponent: () => import('./pages/standings/standings').then((m) => m.Standings) },
       { path: 'stats', loadComponent: () => import('./pages/stats/stats').then((m) => m.Stats) },
+      { path: 'auth', loadComponent: () => import('./pages/auth/auth').then((m) => m.Auth) },
       { path: 'fantasy', loadComponent: () => import('./pages/fantasy-home/fantasy-home').then((m) => m.FantasyHome) },
+      { path: 'fantasy/squad', loadComponent: () => import('./pages/fantasy-squad/fantasy-squad').then((m) => m.FantasySquad) },
       { path: 'teams/:id', loadComponent: () => import('./pages/team-detail/team-detail').then((m) => m.TeamDetail) },
     ]
   }

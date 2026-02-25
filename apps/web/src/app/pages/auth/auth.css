@@ -1,0 +1,135 @@
+.auth-page {
+  padding: 2rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.auth-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 2.5rem 2rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+}
+
+h1 {
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin: 0 0 1.5rem;
+  text-align: center;
+}
+
+.error-msg {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--color-danger);
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.field input {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.95rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  transition: border-color 0.15s;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.field.has-error input {
+  border-color: var(--color-danger);
+}
+
+.field.has-error input:focus {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-danger) 20%, transparent);
+}
+
+.field-error {
+  font-size: 0.78rem;
+  color: var(--color-danger);
+  margin-top: 0.15rem;
+}
+
+.submit-btn {
+  padding: 0.7rem;
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  margin-top: 0.5rem;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-primary) 85%, black);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.toggle-row {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: 0;
+  margin-left: 0.25rem;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 500px) {
+  .auth-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .auth-card {
+    padding: 2rem 1.25rem;
+  }
+}

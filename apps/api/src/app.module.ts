@@ -10,6 +10,8 @@ import { StandingsModule } from './standings/standings.module';
 import { HealthModule } from './health/health.module';
 import { PlayersModule } from './players/players.module';
 import { StatsModule } from './stats/stats.module';
+import { AuthModule } from './auth/auth.module';
+import { FantasyModule } from './fantasy/fantasy.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { StatsModule } from './stats/stats.module';
     PlayersModule,
     StatsModule,
     HealthModule,
+    AuthModule,
+    FantasyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

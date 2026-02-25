@@ -17,6 +17,7 @@ async function bootstrap() {
     .setTitle('Kazakh Football API')
     .setDescription('API for Kazakh Football competitions')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);

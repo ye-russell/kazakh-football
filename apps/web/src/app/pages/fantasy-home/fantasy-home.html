@@ -1,8 +1,161 @@
 <div class="fantasy-home">
-  <div class="coming-soon-card">
-    <div class="icon">🏆</div>
-    <h1>{{ 'fantasyHome.title' | translate }}</h1>
-    <div class="badge">{{ 'fantasyHome.comingSoon' | translate }}</div>
-    <p>{{ 'fantasyHome.description' | translate }}</p>
+  <!-- Header section -->
+  <div class="fantasy-header">
+    <h1>{{ 'fantasy.title' | translate }}</h1>
+    @if (isLoggedIn()) {
+      <div class="user-bar">
+        <span class="user-name">{{ user()?.displayName }}</span>
+        <button class="btn-outline btn-sm" (click)="logout()">{{ 'fantasy.logout' | translate }}</button>
+      </div>
+    }
   </div>
+
+  @if (loading()) {
+    <div class="state-message">{{ 'fantasy.loading' | translate }}</div>
+  }
+
+  @if (!loading()) {
+    <!-- Not logged in -->
+    @if (!isLoggedIn()) {
+      <div class="cta-card">
+        <div class="icon">🏆</div>
+        <h2>{{ 'fantasy.ctaTitle' | translate }}</h2>
+        <p>{{ 'fantasy.ctaDescription' | translate }}</p>
+        <button class="btn-primary" (click)="goToLogin()">{{ 'fantasy.loginToPlay' | translate }}</button>
+      </div>
+    }
+
+    <!-- Logged in but no team -->
+    @if (isLoggedIn() && !myTeam()) {
+      <div class="cta-card">
+        <div class="icon">⚽</div>
+        <h2>{{ 'fantasy.createTeamTitle' | translate }}</h2>
+        <p>{{ 'fantasy.createTeamDescription' | translate }}</p>
+
+        @if (error()) {
+          <div class="error-msg">{{ error() }}</div>
+        }
+
+        @if (!showCreateForm()) {
+          <button class="btn-primary" (click)="showCreateForm.set(true)">{{ 'fantasy.createTeamBtn' | translate }}</button>
+        } @else {
+          <form (ngSubmit)="createTeam()" class="create-form">
+            <input
+              type="text"
+              [(ngModel)]="teamName"
+              name="teamName"
+              [placeholder]="'fantasy.teamNamePlaceholder' | translate"
+              required
+              minlength="2"
+              maxlength="30" />
+            <button type="submit" class="btn-primary" [disabled]="creating()">
+              {{ creating() ? ('fantasy.creating' | translate) : ('fantasy.create' | translate) }}
+            </button>
+          </form>
+        }
+      </div>
+    }
+
+    <!-- Has a team — dashboard -->
+    @if (isLoggedIn() && myTeam(); as team) {
+      <div class="dashboard-grid">
+        <!-- My Team card -->
+        <div class="card team-card">
+          <h2>{{ team.name }}</h2>
+          <div class="team-stats">
+            <div class="stat">
+              <span class="stat-value">{{ team.totalPoints }}</span>
+              <span class="stat-label">{{ 'fantasy.points' | translate }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ team.budget.toFixed(1) }}</span>
+              <span class="stat-label">{{ 'fantasy.budget' | translate }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ team.picks.length }}/15</span>
+              <span class="stat-label">{{ 'fantasy.squad' | translate }}</span>
+            </div>
+          </div>
+
+          @if (squadSummary(); as summary) {
+            <div class="formation-bar">
+              <span class="pos-badge gk">GK {{ summary['GK'] }}</span>
+              <span class="pos-badge df">DF {{ summary['DF'] }}</span>
+              <span class="pos-badge mf">MF {{ summary['MF'] }}</span>
+              <span class="pos-badge fw">FW {{ summary['FW'] }}</span>
+            </div>
+          }
+
+          <a routerLink="/fantasy/squad" class="btn-primary squad-btn">
+            {{ team.picks.length > 0 ? ('fantasy.editSquad' | translate) : ('fantasy.pickSquad' | translate) }}
+          </a>
+        </div>
+
+        <!-- Squad list card -->
+        @if (team.picks.length > 0) {
+          <div class="card">
+            <h3>{{ 'fantasy.yourSquad' | translate }}</h3>
+            <table class="squad-table">
+              <thead>
+                <tr>
+                  <th>{{ 'fantasy.pos' | translate }}</th>
+                  <th>{{ 'fantasy.player' | translate }}</th>
+                  <th>{{ 'fantasy.team' | translate }}</th>
+                  <th>{{ 'fantasy.price' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (pick of team.picks; track pick.id) {
+                  <tr [class.captain]="pick.isCaptain" [class.vice-captain]="pick.isViceCaptain">
+                    <td class="col-pos">
+                      <span class="pos-badge" [class]="pick.position.toLowerCase()">{{ pick.position }}</span>
+                    </td>
+                    <td class="col-name">
+                      {{ pick.player.name }}
+                      @if (pick.isCaptain) { <span class="badge-c">C</span> }
+                      @if (pick.isViceCaptain) { <span class="badge-vc">V</span> }
+                    </td>
+                    <td class="col-team">{{ pick.player.team.shortName }}</td>
+                    <td class="col-price">{{ pick.player.price.toFixed(1) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Leaderboard -->
+    @if (leaderboard().length > 0) {
+      <div class="card leaderboard-section">
+        <h3>{{ 'fantasy.leaderboard' | translate }}</h3>
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th class="col-rank">#</th>
+              <th>{{ 'fantasy.manager' | translate }}</th>
+              <th>{{ 'fantasy.teamName' | translate }}</th>
+              <th class="col-pts">{{ 'fantasy.points' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of leaderboard(); track entry.id; let i = $index) {
+              <tr [class.top-three]="i < 3">
+                <td class="col-rank">
+                  @if (i === 0) { <span class="medal">🥇</span> }
+                  @else if (i === 1) { <span class="medal">🥈</span> }
+                  @else if (i === 2) { <span class="medal">🥉</span> }
+                  @else { {{ i + 1 }} }
+                </td>
+                <td>{{ entry.user.displayName }}</td>
+                <td>{{ entry.name }}</td>
+                <td class="col-pts">{{ entry.totalPoints }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
 </div>

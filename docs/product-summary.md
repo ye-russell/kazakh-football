@@ -1,6 +1,6 @@
 # Kazakh Football App – Deep Technical & Product Summary
 
-> Last updated: February 22, 2026
+> Last updated: February 25, 2026
 
 ## 1. Product Vision
 
@@ -10,7 +10,7 @@ The goal of the **Kazakh Football** app is to create a modern, reliable, and ext
 - Player information & profiles
 - Transfers
 - News aggregation
-- Fantasy football
+- **Fantasy football** ✅
 
 The app is inspired by products like the official **Premier League app**, but tailored for the Kazakh football ecosystem, where no high-quality public API currently exists.
 
@@ -44,11 +44,11 @@ The project is implemented as a **pnpm monorepo**:
 kazakh-football/
 ├── apps/
 │   ├── api/           # NestJS 11 backend (REST API)
-│   │   ├── prisma/    # Schema, migrations (4), seed script
-│   │   └── src/       # 8 domain modules + common filters
+│   │   ├── prisma/    # Schema, migrations (5), seed script
+│   │   └── src/       # 10 domain modules + common filters
 │   └── web/           # Angular 21 frontend
 │       ├── public/    # i18n JSONs (en, kk, ru)
-│       └── src/app/   # 7 routed pages, 3 shared components, 8 services
+│       └── src/app/   # 10 routed pages, 3 shared components, 10+ services
 ├── packages/          # Shared DTOs / types (planned, not yet used)
 └── docs/              # This file
 ```
@@ -70,8 +70,11 @@ Benefits:
 | TypeScript | 5.7+ | Language |
 | Prisma | 5.x | ORM, migrations, type-safe DB access |
 | PostgreSQL | — | Database (Supabase-hosted) |
-| Swagger | @nestjs/swagger | API documentation at `/docs` |
+| Swagger | @nestjs/swagger | API documentation at `/docs` (with Bearer auth) |
 | class-validator | — | DTO validation |
+| @nestjs/jwt | — | JWT token generation & verification |
+| passport-jwt | — | JWT authentication strategy |
+| bcrypt | — | Password hashing |
 | Jest | 30.x | Unit & e2e testing |
 
 ### Module architecture
@@ -85,11 +88,14 @@ AppModule
 ├── MatchesModule      → GET /matches, /matches/:id
 ├── StandingsModule    → GET /standings (computed)
 ├── StatsModule        → GET /stats (aggregated leaderboards)
-└── PlayersModule      → GET /players, /players/:id
+├── PlayersModule      → GET /players, /players/:id
+├── AuthModule         → POST /auth/register, /auth/login, GET /auth/profile
+└── FantasyModule      → Fantasy teams, picks, leaderboard, scoring
 ```
 
 ### Backend philosophy
-- Read-heavy, read-only API (no write endpoints)
+- Read-heavy API with authenticated write endpoints for fantasy
+- JWT-based authentication (register/login, protected routes via guards)
 - Computed data (standings) instead of stored aggregates
 - Clear separation of concerns (one module per domain)
 - Global exception filter for consistent error shapes
@@ -129,7 +135,13 @@ Competition ──< Match >── Team (home/away)
                  └──< MatchLineup
                           └── Player (isStarter, position)
 
-Team ──< Player (name, number, position)
+Team ──< Player (name, number, position, price)
+              │
+              └──< FantasyPick
+
+User ──< FantasyTeam ──< FantasyPick ──> Player
+              │
+              └──< FantasyGameweek (round, points)
 ```
 
 ### Core entities
@@ -139,13 +151,18 @@ Team ──< Player (name, number, position)
 | **Competition** | id, code (unique), name, season | KPL, First League |
 | **Team** | id, name (unique), shortName, city?, logoUrl? | 12 teams seeded |
 | **Match** | id, competitionId, round, kickoffAt, status, homeTeamId, awayTeamId, homeScore?, awayScore? | Constraint: home ≠ away |
-| **Player** | id, teamId, name, number?, position? | 48 players seeded (4 per team) |
+| **Player** | id, teamId, name, number?, position?, price? | 48 players seeded (4 per team) with fantasy prices |
 | **MatchEvent** | id, matchId, teamId, playerId, type, minute, extraMinute?, assistPlayerId?, subInPlayerId?, subOutPlayerId? | Cascade on match delete |
 | **MatchLineup** | id, matchId, teamId, playerId, isStarter, position? | Unique (matchId, playerId), cascade on match delete |
+| **User** | id, email (unique), displayName, passwordHash | bcrypt-hashed passwords |
+| **FantasyTeam** | id, userId, competitionId, name, budget (100.0), totalPoints | Unique (userId, competitionId) |
+| **FantasyPick** | id, fantasyTeamId, playerId, position (GK/DF/MF/FW), isCaptain, isViceCaptain | Unique (fantasyTeamId, playerId) |
+| **FantasyGameweek** | id, fantasyTeamId, round, points | Unique (fantasyTeamId, round) |
 
 ### Enums
 - **MatchStatus**: `scheduled`, `live`, `finished`
 - **MatchEventType**: `goal`, `yellow_card`, `red_card`, `substitution`
+- **FantasyPickPosition**: `GK`, `DF`, `MF`, `FW`
 
 ### Indexes
 - `(competitionId, round)`, `(competitionId, kickoffAt)` on Match
@@ -213,12 +230,12 @@ Team ──< Player (name, number, position)
 | Type | Count | Items |
 |------|-------|-------|
 | Root | 1 | `App` |
-| Layout | 1 | `Layout` (header, nav, sub-nav, responsive bottom bar) |
-| Pages | 7 (routed) | `MatchesHome`, `Matches`, `MatchDetail`, `Standings`, `TeamDetail`, `Stats`, `FantasyHome` |
-| Unrouted | 2 | `Home` (unused), `Teams` (exists, not routed) |
+| Layout | 1 | `Layout` (header, nav, fantasy sub-nav, responsive bottom bar) |
+| Pages | 10 (routed) | `MatchesHome`, `Matches`, `MatchDetail`, `Standings`, `TeamDetail`, `Stats`, `Auth`, `FantasyHome`, `FantasySquad`, `Home` |
+| Unrouted | 1 | `Teams` (exists, not routed) |
 | Shared | 3 | `MatchList`, `MatchweekSelector`, `LanguageSwitcher` |
-| Services | 8 | `ApiClient`, `LeagueService`, `MatchesService`, `StandingsService`, `TeamsService`, `StatsService`, `LanguageService`, `TranslateHttpLoader` |
-| Interfaces | 1 file | 11 interfaces/types in `api.interfaces.ts` |
+| Services | 10+ | `ApiClient`, `LeagueService`, `MatchesService`, `StandingsService`, `TeamsService`, `StatsService`, `AuthService`, `FantasyService`, `LanguageService`, `TranslateHttpLoader` |
+| Interfaces | 1+ files | 18+ interfaces/types in `api.interfaces.ts` + fantasy interfaces |
 
 ### Route table
 
@@ -230,7 +247,9 @@ Team ──< Player (name, number, position)
 | `/matches/:id` | `MatchDetail` | Match events + lineups |
 | `/standings` | `Standings` | Full league table |
 | `/stats` | `Stats` | 5-tab leaderboard (scorers, assists, yellow cards, red cards, clean sheets) |
-| `/fantasy` | `FantasyHome` | **Placeholder** — "Coming soon" |
+| `/auth` | `Auth` | Login / Register with client-side validation |
+| `/fantasy` | `FantasyHome` | Fantasy dashboard — team creation, squad overview, leaderboard |
+| `/fantasy/squad` | `FantasySquad` | Squad builder — pick players, set captain, manage budget |
 | `/teams/:id` | `TeamDetail` | Team info + recent matches |
 
 ### Caching strategy
@@ -293,7 +312,10 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 | Team detail | ✅ | Team info, recent matches |
 | i18n | ✅ | 3 languages with persistent selection |
 | Stats page | ✅ | Tabbed leaderboards — scorers, assists, yellow/red cards, clean sheets |
-| Fantasy | 🔲 | Placeholder only |
+| Auth page | ✅ | Login & register with client-side validation, password confirmation |
+| Fantasy dashboard | ✅ | Team creation, squad overview with formation bar, leaderboard with medals |
+| Squad builder | ✅ | Two-panel UI: selected squad (captain/VC/remove) + player pool (position/team/search filter, budget tracking) |
+| Fantasy sub-nav | ✅ | Layout header shows fantasy navigation when on fantasy routes |
 
 ---
 
@@ -312,16 +334,17 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 
 ### What's Missing
 
-1. **Fantasy football** — Placeholder only; requires auth, new schema, scoring engine, squad builder
-2. **Teams list page** — `TeamsComponent` exists but is not routed (no `/teams` in route table)
-3. **Player profiles** — `/players/:id` endpoint exists but no frontend page for it
-4. **Live polling** — Strategy defined but not implemented (no interval-based data refresh)
-5. **Tests** — Only standings utility has meaningful unit tests; `app.spec.ts` is outdated/broken
-6. **CI/CD** — No GitHub Actions workflows
-7. **Shared packages** — `packages/` directory referenced but does not exist; DTOs duplicated between FE/BE
-8. **PWA** — Mentioned in vision but no service worker or manifest configured
-9. **News aggregation** — Planned but not started
-10. **Pagination** — No endpoints support pagination; will become a problem at scale
+1. **Teams list page** — `TeamsComponent` exists but is not routed (no `/teams` in route table)
+2. **Player profiles** — `/players/:id` endpoint exists but no frontend page for it
+3. **Gameweek history UI** — Backend supports it, no frontend page yet
+4. **Transfer window logic** — Squad editing is open-ended; no transfer windows or free transfer limits
+5. **Live polling** — Strategy defined but not implemented (no interval-based data refresh)
+6. **Tests** — Only standings utility has meaningful unit tests; `app.spec.ts` is outdated/broken
+7. **CI/CD** — No GitHub Actions workflows
+8. **Shared packages** — `packages/` directory referenced but does not exist; DTOs duplicated between FE/BE
+9. **PWA** — Mentioned in vision but no service worker or manifest configured
+10. **News aggregation** — Planned but not started
+11. **Pagination** — No endpoints support pagination; will become a problem at scale
 
 ### What Can Be Improved
 
@@ -339,7 +362,7 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 ### Potential Drawbacks
 
 1. **Manual data entry** — All match data is entered through Supabase UI; this doesn't scale beyond a few games per week and is error-prone
-2. **No authentication** — Fantasy football and any personalized features require auth; this is a significant architectural addition
+2. ~~**No authentication**~~ — ✅ Resolved: JWT auth implemented with bcrypt password hashing
 3. **Supabase dependency** — While Prisma abstracts the DB, connection pooling, direct URL patterns, and deployment are Supabase-specific
 4. **No pagination** — As data grows (multiple seasons, all players, all events), unbounded queries will degrade performance
 5. **Client-side standings computation** — The `Standings` page recomputes standings locally for "position change" arrows, duplicating backend logic; if rules change, both must be updated
@@ -380,74 +403,26 @@ The stats feature is fully implemented across backend and frontend.
 
 ---
 
-### Step 1: Fantasy Football (Phase 3 — Next)
+### ✅ Fantasy Football (Phase 3 — Complete)
 
-#### Database schema additions
+The fantasy football feature is fully implemented across backend and frontend.
 
-```prisma
-model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  displayName   String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  fantasyTeams  FantasyTeam[]
-}
+#### Database schema (implemented)
 
-model FantasyTeam {
-  id            String               @id @default(uuid())
-  userId        String
-  user          User                 @relation(fields: [userId], references: [id])
-  name          String
-  competitionId String
-  competition   Competition          @relation(fields: [competitionId], references: [id])
-  budget        Float                @default(100.0)
-  totalPoints   Int                  @default(0)
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
-  picks         FantasyPick[]
-  gameweeks     FantasyGameweek[]
-}
+5th migration (`20260225171316_fantasy_models`) added:
+- **User** — email (unique), displayName, passwordHash (bcrypt)
+- **FantasyTeam** — userId, competitionId, name, budget (100.0 default), totalPoints; unique (userId, competitionId)
+- **FantasyPick** — fantasyTeamId, playerId, position (GK/DF/MF/FW enum), isCaptain, isViceCaptain; unique (fantasyTeamId, playerId)
+- **FantasyGameweek** — fantasyTeamId, round, points; unique (fantasyTeamId, round)
+- Extended **Player** with `price` field (Float?)
+- Position-based pricing in seed: GK 4.0-5.0, DF 4.5-5.5, MF 5.0-7.0, FW 6.0-8.0 (with top-team bonus)
 
-model FantasyPick {
-  id            String       @id @default(uuid())
-  fantasyTeamId String
-  fantasyTeam   FantasyTeam  @relation(fields: [fantasyTeamId], references: [id])
-  playerId      String
-  player        Player       @relation(fields: [playerId], references: [id])
-  isCaptain     Boolean      @default(false)
-  isViceCaptain Boolean      @default(false)
-  position      String       // GK, DF, MF, FW
-  createdAt     DateTime     @default(now())
-
-  @@unique([fantasyTeamId, playerId])
-}
-
-model FantasyGameweek {
-  id            String       @id @default(uuid())
-  fantasyTeamId String
-  fantasyTeam   FantasyTeam  @relation(fields: [fantasyTeamId], references: [id])
-  round         Int
-  points        Int          @default(0)
-  createdAt     DateTime     @default(now())
-
-  @@unique([fantasyTeamId, round])
-}
-
-// Extend Player model:
-model Player {
-  // ... existing fields ...
-  price         Float?       // fantasy price
-  fantasyPicks  FantasyPick[]
-}
-```
-
-#### Scoring rules (proposed)
+#### Scoring rules (implemented)
 
 | Event | Points |
 |-------|--------|
-| Playing 1-59 min | 1 |
-| Playing 60+ min | 2 |
+| Starter (60+ min) | 2 |
+| Substitute (1-59 min) | 1 |
 | Goal (FW) | 4 |
 | Goal (MF) | 5 |
 | Goal (DF/GK) | 6 |
@@ -456,33 +431,56 @@ model Player {
 | Clean sheet (MF) | 1 |
 | Yellow card | -1 |
 | Red card | -3 |
-| Own goal | -2 |
-| Captain | 2× points |
+| Captain | 2× total points |
 
-#### Backend implementation plan
-1. **Auth module**: JWT-based authentication (or Supabase Auth integration)
-2. **Users module**: Registration, login, profile
-3. **Fantasy module**:
-   - `POST /fantasy/teams` — create fantasy team (with budget)
-   - `GET /fantasy/teams/:id` — view fantasy team
-   - `PUT /fantasy/teams/:id/picks` — set squad (validate budget, positions, max per team)
-   - `GET /fantasy/leaderboard?competition=<code>` — global ranking
-   - `GET /fantasy/gameweeks/:round` — points for a specific gameweek
-4. **Scoring engine**: Background job or triggered after match finishes
-   - Calculate points per player per gameweek based on MatchEvent data
-   - Apply captain multiplier
-   - Update FantasyGameweek and FantasyTeam.totalPoints
+#### Backend implementation (complete)
 
-#### Frontend implementation plan
-1. **Auth pages**: Login / Register (new routes)
-2. **Fantasy hub** (`/fantasy`):
-   - Dashboard: my team, current gameweek points, overall rank
-   - Squad builder: pitch view, player list, budget tracker, position validation
-   - Transfers: swap players within budget
-   - Leaderboard: global ranking table
-   - Gameweek history: points breakdown per round
-3. **Player cards**: Reusable component showing player name, team, position, price, points
-4. **i18n**: Add fantasy-related translations to all 3 languages
+1. **AuthModule** (`apps/api/src/auth/`):
+   - `POST /auth/register` — create user with bcrypt-hashed password, returns JWT
+   - `POST /auth/login` — validate credentials, return JWT
+   - `GET /auth/profile` — 🔐 current user info (JWT guard)
+   - JWT strategy via passport-jwt, 7-day token expiry
+   - `@CurrentUser()` decorator for extracting user from request
+
+2. **FantasyModule** (`apps/api/src/fantasy/`):
+   - `POST /fantasy/teams` — 🔐 create fantasy team (name + competition)
+   - `GET /fantasy/my-team` — 🔐 current user's team with picks
+   - `PUT /fantasy/teams/:id/picks` — 🔐 update squad picks with full validation:
+     - Budget check (total price ≤ team budget)
+     - Position limits (2 GK, 5 DF, 5 MF, 3 FW = 15 players)
+     - Max 3 players from same real team
+     - Exactly 1 captain, at most 1 vice-captain
+   - `GET /fantasy/leaderboard` — global ranking by totalPoints
+   - `GET /fantasy/players` — available players with prices
+   - `GET /fantasy/teams/:id` — view any team detail
+   - `GET /fantasy/teams/:id/gameweeks` — gameweek history
+   - **ScoringService**: calculates player points from MatchEvent/MatchLineup data, applies captain 2× multiplier
+
+#### Frontend implementation (complete)
+
+1. **Auth page** (`/auth`) — Login/Register toggle with signal-based form state:
+   - Email, password, confirm password, display name fields
+   - Real-time `computed()` validation (format, length, match)
+   - JWT token stored in localStorage, `AuthService` manages state
+
+2. **Fantasy dashboard** (`/fantasy`) — `FantasyHome` component:
+   - Team creation flow (name input + create button)
+   - Squad summary: formation bar (GK/DF/MF/FW counts), budget display, total points
+   - Leaderboard table with 🥇🥈🥉 medals for top 3
+   - "Edit Squad" navigation to squad builder
+
+3. **Squad builder** (`/fantasy/squad`) — `FantasySquad` two-panel component:
+   - **Left panel**: Selected squad grouped by position, captain/VC badge toggling, remove player
+   - **Right panel**: Available player pool with 3 filter dimensions:
+     - Position filter (All/GK/DF/MF/FW tabs)
+     - Team filter (dropdown of all available teams)
+     - Text search (name matching)
+   - Budget tracker: remaining budget, per-player price display
+   - Save picks button with full validation mirroring backend rules
+
+4. **Fantasy sub-navigation**: Layout component shows fantasy nav links when on `/fantasy` routes
+
+5. **i18n**: Full fantasy & auth translation keys in EN, KK, RU (80+ new keys)
 
 ---
 
@@ -513,24 +511,28 @@ model Player {
 
 ## 16. Current State Summary
 
-The project has successfully transitioned from idea to a **working backend platform** and a **functional, responsive web frontend**. The hardest technical risks (DB, schema, migrations, connectivity) are resolved. The system provides a usable UI for core browsing flows across 3 languages.
+The project has evolved from idea to a **feature-rich platform** with a fully working **read API**, **JWT authentication**, and **fantasy football** system across backend and frontend. The system provides a usable UI for core browsing flows, personalized fantasy team management, and trilingual support.
 
 ### What's solid
-- Full read-only API with 11 endpoints (including stats aggregation)
+- REST API with 20+ endpoints (public league data + authenticated fantasy CRUD)
+- JWT authentication with bcrypt password hashing
+- Fantasy football: team creation, squad builder with full validation, leaderboard, scoring engine
 - Computed standings with correct football rules (tested)
 - League statistics: 5 leaderboard categories with Prisma `groupBy` aggregates
 - Responsive SPA with adaptive mobile/desktop navigation
 - Match detail with events & lineups
 - Stats page with 5-tab leaderboard and dashboard integration
-- Trilingual i18n
-- Realistic seed data
+- Auth page with real-time signal-based validation
+- Trilingual i18n (80+ fantasy/auth keys added)
+- Realistic seed data with position-based player pricing
 
 ### What needs attention next
-1. **Fantasy football** — requires auth, new schema, scoring engine, and significant frontend work
-2. **Technical debt** — duplicate components, missing tests, broken app.spec.ts, `packages/` directory doesn't exist
-3. **Teams page routing** — component exists but isn't accessible
-4. **Player profiles** — endpoint exists, frontend page doesn't
-5. **Live polling** — strategy defined but not implemented
+1. **Gameweek history UI** — backend endpoint exists, no frontend page
+2. **Transfer windows** — squad editing is currently unlimited; no transfer limits per gameweek
+3. **Technical debt** — duplicate components, missing tests, broken app.spec.ts, `packages/` directory doesn't exist
+4. **Teams page routing** — component exists but isn't accessible
+5. **Player profiles** — endpoint exists, frontend page doesn't
+6. **Live polling** — strategy defined but not implemented
 
-The next logical phase is **fantasy football (big feature)**, with ongoing cleanup of technical debt.
+The next logical phase is **Phase 4 (Admin & Live)**, with ongoing cleanup of technical debt.
 

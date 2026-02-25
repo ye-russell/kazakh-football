@@ -141,3 +141,72 @@ export interface LeagueStats {
   mostRedCards: PlayerStat[];
   cleanSheets: PlayerStat[];
 }
+
+// ═══════════════════════════════════════════════════════════════
+//  AUTH & FANTASY
+// ═══════════════════════════════════════════════════════════════
+
+export interface AuthResponse {
+  accessToken: string;
+  user: {
+    id: string;
+    email: string;
+    displayName: string;
+  };
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  displayName: string;
+  createdAt: string;
+}
+
+export interface FantasyPlayer {
+  id: string;
+  name: string;
+  number?: number | null;
+  position?: string | null;
+  price: number;
+  team: TeamBasic;
+}
+
+export interface FantasyPick {
+  id: string;
+  isCaptain: boolean;
+  isViceCaptain: boolean;
+  position: 'GK' | 'DF' | 'MF' | 'FW';
+  player: FantasyPlayer;
+}
+
+export interface FantasyTeam {
+  id: string;
+  name: string;
+  budget: number;
+  totalPoints: number;
+  competition: {
+    code: string;
+    name: string;
+    season: number;
+  };
+  picks: FantasyPick[];
+  user?: {
+    id: string;
+    displayName: string;
+  };
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  name: string;
+  totalPoints: number;
+  user: {
+    id: string;
+    displayName: string;
+  };
+}
+
+export interface GameweekPoints {
+  round: number;
+  points: number;
+}

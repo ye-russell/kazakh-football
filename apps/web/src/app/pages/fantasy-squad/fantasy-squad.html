@@ -1,0 +1,151 @@
+<div class="squad-page">
+  <div class="squad-header">
+    <a routerLink="/fantasy" class="back-link">← {{ 'fantasy.backToFantasy' | translate }}</a>
+    <h1>{{ 'fantasy.squadBuilder' | translate }}</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="state-message">{{ 'fantasy.loading' | translate }}</div>
+  }
+
+  @if (!loading()) {
+    <!-- Budget & status bar -->
+    <div class="status-bar">
+      <div class="status-item">
+        <span class="status-label">{{ 'fantasy.budget' | translate }}</span>
+        <span class="status-value" [class.over-budget]="remainingBudget() < 0">
+          {{ remainingBudget().toFixed(1) }}
+        </span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">{{ 'fantasy.playersSelected' | translate }}</span>
+        <span class="status-value">{{ picks().length }}/15</span>
+      </div>
+      @for (pos of ['GK', 'DF', 'MF', 'FW']; track pos) {
+        <div class="status-item">
+          <span class="status-label">{{ pos }}</span>
+          <span class="status-value" [class.pos-full]="positionCounts()[pos] >= ({'GK':2,'DF':5,'MF':5,'FW':3}[pos] ?? 0)">
+            {{ positionCounts()[pos] || 0 }}/{{ {'GK':2,'DF':5,'MF':5,'FW':3}[pos] }}
+          </span>
+        </div>
+      }
+    </div>
+
+    @if (error()) {
+      <div class="error-msg">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="success-msg">{{ success() }}</div>
+    }
+
+    <div class="squad-layout">
+      <!-- Selected squad -->
+      <div class="panel picked-panel">
+        <h2>{{ 'fantasy.yourSquad' | translate }} ({{ picks().length }}/15)</h2>
+
+        @if (picks().length === 0) {
+          <div class="empty-msg">{{ 'fantasy.noPlayersYet' | translate }}</div>
+        }
+
+        @for (pick of picks(); track pick.playerId) {
+          <div class="pick-row" [class.is-captain]="pick.isCaptain" [class.is-vc]="pick.isViceCaptain">
+            <span class="pick-pos" [class]="pick.position.toLowerCase()">{{ pick.position }}</span>
+            <div class="pick-info">
+              <span class="pick-name">
+                {{ pick.player.name }}
+                @if (pick.isCaptain) { <span class="badge-c">C</span> }
+                @if (pick.isViceCaptain) { <span class="badge-vc">V</span> }
+              </span>
+              <span class="pick-team">{{ pick.player.team.shortName }} · {{ pick.player.price.toFixed(1) }}m</span>
+            </div>
+            <div class="pick-actions">
+              <button class="action-btn" [class.active]="pick.isCaptain" title="Captain" (click)="setCaptain(pick.playerId)">C</button>
+              <button class="action-btn" [class.active]="pick.isViceCaptain" title="Vice-captain" (click)="setViceCaptain(pick.playerId)">V</button>
+              <button class="action-btn remove" title="Remove" (click)="removePlayer(pick.playerId)">✕</button>
+            </div>
+          </div>
+        }
+
+        @if (picks().length > 0) {
+          <button
+            class="save-btn"
+            [disabled]="!canSave() || saving()"
+            (click)="savePicks()">
+            {{ saving() ? ('fantasy.saving' | translate) : ('fantasy.saveSquad' | translate) }}
+          </button>
+
+          @if (!hasCaptain()) {
+            <div class="hint">{{ 'fantasy.selectCaptain' | translate }}</div>
+          }
+          @if (!hasViceCaptain()) {
+            <div class="hint">{{ 'fantasy.selectViceCaptain' | translate }}</div>
+          }
+        }
+      </div>
+
+      <!-- Player list -->
+      <div class="panel player-panel">
+        <h2>{{ 'fantasy.availablePlayers' | translate }}</h2>
+
+        <!-- Filters -->
+        <div class="filter-bar">
+          @for (pos of positions; track pos) {
+            <button
+              class="filter-btn"
+              [class.active]="positionFilter() === pos"
+              (click)="setFilter(pos)">
+              {{ pos }}
+            </button>
+          }
+        </div>
+
+        <select
+          class="team-filter"
+          [ngModel]="teamFilter()"
+          (ngModelChange)="setTeamFilter($event)">
+          <option value="ALL">{{ 'fantasy.allTeams' | translate }}</option>
+          @for (team of availableTeams(); track team.id) {
+            <option [value]="team.id">{{ team.shortName }}</option>
+          }
+        </select>
+
+        <input
+          type="text"
+          class="search-input"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          [placeholder]="'fantasy.searchPlayers' | translate" />
+
+        <div class="player-list">
+          @for (player of filteredPlayers(); track player.id) {
+            <div
+              class="player-row"
+              [class.picked]="pickedIds().has(player.id)"
+              [class.disabled]="!canAddPlayer(player) && !pickedIds().has(player.id)">
+              <span class="pl-pos" [class]="(player.position || 'MF').toLowerCase()">{{ player.position || 'MF' }}</span>
+              <div class="pl-info">
+                <span class="pl-name">{{ player.name }}</span>
+                <span class="pl-team">{{ player.team.shortName }}</span>
+              </div>
+              <span class="pl-price">{{ player.price.toFixed(1) }}</span>
+              @if (!pickedIds().has(player.id)) {
+                <button
+                  class="add-btn"
+                  [disabled]="!canAddPlayer(player)"
+                  (click)="addPlayer(player)">
+                  +
+                </button>
+              } @else {
+                <button class="add-btn picked-indicator" disabled>✓</button>
+              }
+            </div>
+          }
+
+          @if (filteredPlayers().length === 0) {
+            <div class="empty-msg">{{ 'fantasy.noPlayersFound' | translate }}</div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>
