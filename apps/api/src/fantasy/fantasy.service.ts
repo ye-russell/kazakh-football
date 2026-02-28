@@ -14,6 +14,8 @@ const POSITION_LIMITS: Record<string, number> = { GK: 2, DF: 5, MF: 5, FW: 3 };
 const MAX_PLAYERS_PER_TEAM = 3;
 const STARTING_BUDGET = 100.0;
 
+const GOAL_POINTS: Record<string, number> = { FW: 4, MF: 5, DF: 6, GK: 6 };
+
 @Injectable()
 export class FantasyService {
   constructor(private readonly prisma: PrismaService) {}
@@ -154,6 +156,7 @@ export class FantasyService {
     // Verify ownership
     const team = await this.prisma.fantasyTeam.findUnique({
       where: { id: teamId },
+      select: { id: true, userId: true, competitionId: true },
     });
 
     if (!team) {
@@ -162,6 +165,20 @@ export class FantasyService {
 
     if (team.userId !== userId) {
       throw new ForbiddenException('This is not your team');
+    }
+
+    // ── Squad lock: block changes while a round is in progress ──
+    const liveOrPlayedMatch = await this.prisma.match.findFirst({
+      where: {
+        competitionId: team.competitionId,
+        status: 'live',
+      },
+    });
+
+    if (liveOrPlayedMatch) {
+      throw new BadRequestException(
+        'Squad changes are locked while matches are in progress',
+      );
     }
 
     // Validate picks
@@ -344,5 +361,181 @@ export class FantasyService {
       },
       orderBy: [{ price: 'desc' }, { name: 'asc' }],
     });
+  }
+
+  /**
+   * Compute per-player point breakdown for a fantasy team in a specific round.
+   * This recomputes from match data (no extra DB table needed).
+   */
+  async getGameweekPlayerBreakdown(teamId: string, round: number) {
+    const team = await this.prisma.fantasyTeam.findUnique({
+      where: { id: teamId },
+      select: {
+        id: true,
+        competitionId: true,
+        picks: {
+          select: {
+            playerId: true,
+            position: true,
+            isCaptain: true,
+            isViceCaptain: true,
+            player: {
+              select: {
+                id: true,
+                name: true,
+                position: true,
+                team: { select: { id: true, shortName: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!team) {
+      throw new NotFoundException('Fantasy team not found');
+    }
+
+    // Get matches for this round
+    const matches = await this.prisma.match.findMany({
+      where: {
+        competitionId: team.competitionId,
+        round,
+        status: 'finished',
+      },
+      select: {
+        id: true,
+        homeTeamId: true,
+        awayTeamId: true,
+        homeScore: true,
+        awayScore: true,
+        events: {
+          select: { playerId: true, assistPlayerId: true, type: true },
+        },
+        lineups: {
+          select: {
+            playerId: true,
+            teamId: true,
+            isStarter: true,
+            position: true,
+            player: { select: { position: true } },
+          },
+        },
+      },
+    });
+
+    // Build per-player point map (same logic as ScoringService)
+    const pointsMap = new Map<
+      string,
+      { points: number; breakdown: Record<string, number> }
+    >();
+
+    const getOrCreate = (playerId: string) => {
+      if (!pointsMap.has(playerId)) {
+        pointsMap.set(playerId, { points: 0, breakdown: {} });
+      }
+      return pointsMap.get(playerId)!;
+    };
+
+    for (const match of matches) {
+      const homeClean = match.awayScore === 0;
+      const awayClean = match.homeScore === 0;
+
+      for (const lineup of match.lineups) {
+        const pp = getOrCreate(lineup.playerId);
+        const pos = lineup.position || lineup.player.position || 'MF';
+
+        if (lineup.isStarter) {
+          pp.points += 2;
+          pp.breakdown['appearance'] = (pp.breakdown['appearance'] || 0) + 2;
+        } else {
+          const wasSubbedIn = match.events.some(
+            (e) => e.type === 'substitution' && e.playerId === lineup.playerId,
+          );
+          if (wasSubbedIn) {
+            pp.points += 1;
+            pp.breakdown['appearance'] = (pp.breakdown['appearance'] || 0) + 1;
+          }
+        }
+
+        const isHome = lineup.teamId === match.homeTeamId;
+        const cleanSheet = isHome ? homeClean : awayClean;
+        if (cleanSheet && lineup.isStarter) {
+          if (pos === 'GK' || pos === 'DF') {
+            pp.points += 4;
+            pp.breakdown['cleanSheet'] = (pp.breakdown['cleanSheet'] || 0) + 4;
+          } else if (pos === 'MF') {
+            pp.points += 1;
+            pp.breakdown['cleanSheet'] = (pp.breakdown['cleanSheet'] || 0) + 1;
+          }
+        }
+      }
+
+      for (const event of match.events) {
+        if (event.type === 'goal') {
+          const pp = getOrCreate(event.playerId);
+          const lineup = match.lineups.find(
+            (l) => l.playerId === event.playerId,
+          );
+          const pos = lineup?.position || lineup?.player.position || 'MF';
+          const goalPts = GOAL_POINTS[pos] || 4;
+          pp.points += goalPts;
+          pp.breakdown['goals'] = (pp.breakdown['goals'] || 0) + goalPts;
+
+          if (event.assistPlayerId) {
+            const ap = getOrCreate(event.assistPlayerId);
+            ap.points += 3;
+            ap.breakdown['assists'] = (ap.breakdown['assists'] || 0) + 3;
+          }
+        }
+        if (event.type === 'yellow_card') {
+          const pp = getOrCreate(event.playerId);
+          pp.points -= 1;
+          pp.breakdown['yellowCards'] = (pp.breakdown['yellowCards'] || 0) - 1;
+        }
+        if (event.type === 'red_card') {
+          const pp = getOrCreate(event.playerId);
+          pp.points -= 3;
+          pp.breakdown['redCards'] = (pp.breakdown['redCards'] || 0) - 3;
+        }
+      }
+    }
+
+    // Check captain/VC promotion
+    const captainPick = team.picks.find((p) => p.isCaptain);
+    const captainPlayed =
+      captainPick &&
+      pointsMap.has(captainPick.playerId) &&
+      (pointsMap.get(captainPick.playerId)!.breakdown['appearance'] ?? 0) > 0;
+
+    // Build result
+    const players = team.picks.map((pick) => {
+      const pp = pointsMap.get(pick.playerId);
+      let rawPoints = pp?.points ?? 0;
+      let multiplier = 1;
+
+      if (pick.isCaptain && captainPlayed) {
+        multiplier = 2;
+      } else if (pick.isViceCaptain && !captainPlayed) {
+        multiplier = 2;
+      }
+
+      return {
+        playerId: pick.playerId,
+        playerName: pick.player.name,
+        position: pick.position,
+        teamShortName: pick.player.team.shortName,
+        isCaptain: pick.isCaptain,
+        isViceCaptain: pick.isViceCaptain,
+        rawPoints,
+        multiplier,
+        totalPoints: rawPoints * multiplier,
+        breakdown: pp?.breakdown ?? {},
+      };
+    });
+
+    const gameweekTotal = players.reduce((s, p) => s + p.totalPoints, 0);
+
+    return { round, gameweekTotal, players };
   }
 }

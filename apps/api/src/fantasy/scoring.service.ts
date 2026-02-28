@@ -184,12 +184,27 @@ export class ScoringService {
     for (const fTeam of fantasyTeams) {
       let gameweekPoints = 0;
 
+      // Check if captain played (has points entry in the map)
+      const captainPick = fTeam.picks.find((p) => p.isCaptain);
+      const viceCaptainPick = fTeam.picks.find((p) => p.isViceCaptain);
+      const captainPlayed =
+        captainPick && playerPointsMap.has(captainPick.playerId) &&
+        (playerPointsMap.get(captainPick.playerId)!.breakdown['appearance'] ?? 0) > 0;
+
       for (const pick of fTeam.picks) {
         const pp = playerPointsMap.get(pick.playerId);
         if (!pp) continue;
 
         let pts = pp.points;
-        if (pick.isCaptain) {
+
+        // Captain gets 2× points; if captain didn't play, vice-captain gets 2×
+        if (pick.isCaptain && captainPlayed) {
+          pts *= 2;
+        } else if (
+          pick.isViceCaptain &&
+          !captainPlayed &&
+          viceCaptainPick
+        ) {
           pts *= 2;
         }
 

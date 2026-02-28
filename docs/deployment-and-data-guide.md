@@ -1,6 +1,6 @@
 # Deployment Readiness & Data Population Guide
 
-> Last updated: February 25, 2026
+> Last updated: March 1, 2026
 
 ## Deployment Readiness
 
@@ -13,7 +13,7 @@
 | Auth (JWT) | ✅ Working | No |
 | Fantasy system | ✅ Working | No |
 | Real match/team/player data | ❌ Missing | **Yes** |
-| Environment config (production) | ⚠️ Needs setup | Yes |
+| Environment config (production) | ⚠️ Needs setup | Yes (incl. `ADMIN_API_KEY`) |
 | CORS / domain config | ⚠️ Not configured | Yes |
 | Frontend hosting (Vercel/Netlify/CF Pages) | ⚠️ Not set up | Yes |
 | API hosting (Railway/Render/Fly.io) | ⚠️ Not set up | Yes |
@@ -92,36 +92,51 @@ The scoring engine (`ScoringService`) already exists in code.
 | Yellow card | -1 |
 | Red card | -3 |
 | Captain | 2× total points |
+| Vice-captain (if captain didn't play) | 2× total points |
 
 ### After each round is complete
 
 1. **Ensure all match data is entered** — scores, events (goals, assists, cards), lineups (who started, who was subbed in)
-2. **Trigger scoring** — call the scoring endpoint or run the scoring service. It will:
+2. **Set all matches to `finished`** — this is important because squad changes are locked while any match has `status=live`
+3. **Trigger scoring** — call the admin scoring endpoint:
+
+```bash
+curl -X POST http://localhost:3000/fantasy/score-round \
+  -H "Content-Type: application/json" \
+  -H "x-admin-key: YOUR_ADMIN_API_KEY" \
+  -d '{"round": 1, "competition": "kpl"}'
+```
+
+   This will:
    - Look at every fantasy team's picks for that round
    - For each picked player, scan `MatchEvent` and `MatchLineup` to calculate points
-   - Apply captain 2× multiplier
+   - Apply captain 2× multiplier (or vice-captain 2× if captain didn't play)
    - Create/update `FantasyGameweek` record (team + round + points)
    - Update `FantasyTeam.totalPoints` (sum of all gameweeks)
-3. **Leaderboard updates automatically** — it queries by `totalPoints DESC`
+4. **Leaderboard updates automatically** — it queries by `totalPoints DESC`
+5. **Users can view per-player breakdowns** — via the Gameweek History page on the frontend
 
 ### Practical workflow per matchday
 
 ```
 Friday/Saturday/Sunday:
   → Matches played
-  → Enter results in Supabase (scores, events, lineups)
+  → Set match status to 'live' in Supabase (this locks squad changes)
+  → Enter results (scores, events, lineups)
+  → Set match status to 'finished'
 
 Sunday/Monday evening:
-  → Trigger fantasy scoring for that round
+  → Trigger fantasy scoring: POST /fantasy/score-round with x-admin-key header
   → Leaderboard refreshes
-  → Users see updated points
+  → Users see updated points + per-player breakdowns
+  → Squad changes are unlocked (no more live matches)
 ```
 
 ### What's not yet automated
 
-- **No automatic trigger** — manually call the scoring endpoint or add a button in an admin UI
-- **No transfer deadline** — users can currently edit squads anytime (lock picks before kickoff is a future feature)
-- Suggestion: add a simple admin-only `POST /fantasy/score-round?round=X` endpoint that triggers recalculation
+- **No automatic trigger** — manually call `POST /fantasy/score-round` with the `x-admin-key` header after entering match data
+- **No per-gameweek transfer limits** — users can edit squads freely between gameweeks (but changes are blocked during live matches)
+- **Environment setup** — set `ADMIN_API_KEY` in your `.env` file for the scoring endpoint to work
 
 ---
 

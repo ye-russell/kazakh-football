@@ -37,7 +37,8 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - Computed standings (points, GD, GF/GA, W/D/L)
 - League statistics: top scorers, assists, yellow/red cards, clean sheets (Prisma `groupBy` aggregates)
 - **Authentication**: JWT-based registration & login (bcrypt password hashing, passport-jwt strategy)
-- **Fantasy Football**: Team creation, squad pick management (budget/position/team-count validation), leaderboard, gameweek scoring engine
+- **Fantasy Football**: Team creation, squad pick management (budget/position/team-count validation), leaderboard, gameweek scoring engine, per-player point breakdowns, vice-captain auto-promotion, squad lock during live matches
+- **Admin scoring endpoint**: `POST /fantasy/score-round` protected by API key (`x-admin-key` header)
 - Health check endpoint (DB connectivity)
 - Global exception filter with consistent error shape
 - Swagger / OpenAPI documentation at `/docs` (with Bearer auth)
@@ -55,6 +56,7 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - **Auth page**: Login & registration with client-side validation, password confirmation
 - **Fantasy dashboard**: Team creation, squad overview with formation bar, leaderboard with medals
 - **Squad builder**: Two-panel UI — selected squad (captain/VC/remove) + available players (position filter, team filter, search, budget tracking)
+- **Gameweek history page**: Expandable per-round view with per-player point breakdowns (appearance, goals, assists, clean sheets, cards, captain multiplier)
 - Fantasy sub-navigation in layout header
 - Trilingual i18n (English, Kazakh, Russian)
 - `OnPush` change detection on all components
@@ -62,13 +64,12 @@ The project starts with a **clean, reliable data layer** (fixtures, results, sta
 - Lazy-loaded routes
 
 #### Not yet implemented
-❌ Write endpoints / admin panel  
+❌ Full admin panel  
 ❌ Push notifications  
 ❌ Teams list page (component exists, not routed)  
 ❌ Player profile pages  
 ❌ News aggregation  
-❌ Gameweek history UI  
-❌ Transfer window logic  
+❌ Transfer window / free transfer limits per gameweek  
 
 ---
 
@@ -102,8 +103,9 @@ kazakh-football/                    ← pnpm monorepo root
 │           │   ├── team-detail/    ← Individual team page
 │           │   ├── stats/          ← 5-tab statistical leaderboards
 │           │   ├── auth/           ← Login / Register
-│           │   ├── fantasy-home/   ← Fantasy dashboard & leaderboard
-│           │   └── fantasy-squad/  ← Squad builder (pick players, captain, budget)
+│           │   ├── fantasy-home/      ← Fantasy dashboard & leaderboard
+│           │   ├── fantasy-squad/     ← Squad builder (pick players, captain, budget)
+│           │   └── fantasy-gameweeks/ ← Gameweek history with player breakdowns
 │           └── shared/
 │               ├── components/     ← MatchList, MatchweekSelector, LanguageSwitcher
 │               ├── interfaces/     ← API type definitions
@@ -161,6 +163,13 @@ Angular SPA  →  HTTP (REST)  →  NestJS API  →  Prisma ORM  →  PostgreSQL
 | `GET` | `/fantasy/players` | `competition?` | Available players with prices |
 | `GET` | `/fantasy/teams/:id` | — | View any fantasy team |
 | `GET` | `/fantasy/teams/:id/gameweeks` | — | Gameweek points history |
+| `GET` | `/fantasy/teams/:id/gameweeks/:round/players` | — | Per-player point breakdown for a gameweek |
+
+### Admin endpoints (x-admin-key header required)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/fantasy/score-round` | Trigger scoring for a gameweek (body: `{ round, competition? }`) |
 
 ### Auth endpoints
 
@@ -289,6 +298,7 @@ DIRECT_URL=postgresql://...        # direct connection (for migrations/seeds)
 PORT=3000
 HOST=0.0.0.0
 JWT_SECRET=your-secret-key         # required for auth
+ADMIN_API_KEY=your-admin-key       # required for scoring trigger endpoint
 ```
 
 Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)  
@@ -317,10 +327,14 @@ Web app: [http://localhost:4200](http://localhost:4200)
 - [x] **Database**: Fantasy schema (User, FantasyTeam, FantasyPick, FantasyGameweek) + player pricing
 - [x] **Backend**: JWT authentication (register, login, profile)
 - [x] **Backend**: Fantasy CRUD endpoints (create team, update picks with full validation, leaderboard)
-- [x] **Backend**: Scoring engine (goals, assists, clean sheets, cards, captain 2×)
+- [x] **Backend**: Scoring engine (goals, assists, clean sheets, cards, captain 2×, vice-captain auto-promotion)
+- [x] **Backend**: Admin scoring trigger (`POST /fantasy/score-round`) with API key guard
+- [x] **Backend**: Per-player gameweek point breakdown endpoint
+- [x] **Backend**: Squad lock during live matches (prevents squad changes while matches are in progress)
 - [x] **Frontend**: Auth page — login/register with client-side validation & password confirmation
 - [x] **Frontend**: Fantasy dashboard — team creation, squad overview, leaderboard
 - [x] **Frontend**: Squad builder — two-panel UI with position/team/search filters, budget tracking, captain/VC selection
+- [x] **Frontend**: Gameweek history page — expandable round list with per-player scoring breakdown
 - [x] **Frontend**: Fantasy sub-navigation in layout
 - [x] **i18n**: Full fantasy & auth translations in EN, KK, RU
 - [x] **Seed**: Position-based player pricing with top-team bonus

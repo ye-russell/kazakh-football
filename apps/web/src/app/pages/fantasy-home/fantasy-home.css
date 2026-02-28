@@ -1,6 +1,5 @@
 .fantasy-home {
   padding: 0 1.5rem 2rem;
-  max-width: 900px;
 }
 
 .fantasy-header {
@@ -225,6 +224,14 @@
 .squad-btn {
   display: block;
   width: 100%;
+}
+
+.gameweek-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  text-align: center;
+  text-decoration: none;
 }
 
 /* ── Squad Table ─────────────────────────────────── */

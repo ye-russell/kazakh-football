@@ -157,7 +157,13 @@
     "selectCaptain": "Капитанды таңдаңыз (C) — 2× ұпай",
     "selectViceCaptain": "Вице-капитанды таңдаңыз (V)",
     "dashboard": "Басқару тақтасы",
-    "mySquad": "Менің құрамым"
+    "mySquad": "Менің құрамым",
+    "gameweekHistory": "Тур тарихы",
+    "noGameweeks": "Тур деректері жоқ",
+    "round": "Тур",
+    "pts": "ұпай",
+    "details": "Толығырақ",
+    "total": "Барлығы"
   },
   "auth": {
     "loginTitle": "Кіру",

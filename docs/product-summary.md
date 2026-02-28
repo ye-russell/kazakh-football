@@ -1,6 +1,6 @@
 # Kazakh Football App – Deep Technical & Product Summary
 
-> Last updated: February 25, 2026
+> Last updated: March 1, 2026
 
 ## 1. Product Vision
 
@@ -90,7 +90,7 @@ AppModule
 ├── StatsModule        → GET /stats (aggregated leaderboards)
 ├── PlayersModule      → GET /players, /players/:id
 ├── AuthModule         → POST /auth/register, /auth/login, GET /auth/profile
-└── FantasyModule      → Fantasy teams, picks, leaderboard, scoring
+└── FantasyModule      → Fantasy teams, picks, leaderboard, scoring, admin trigger
 ```
 
 ### Backend philosophy
@@ -231,7 +231,7 @@ User ──< FantasyTeam ──< FantasyPick ──> Player
 |------|-------|-------|
 | Root | 1 | `App` |
 | Layout | 1 | `Layout` (header, nav, fantasy sub-nav, responsive bottom bar) |
-| Pages | 10 (routed) | `MatchesHome`, `Matches`, `MatchDetail`, `Standings`, `TeamDetail`, `Stats`, `Auth`, `FantasyHome`, `FantasySquad`, `Home` |
+| Pages | 11 (routed) | `MatchesHome`, `Matches`, `MatchDetail`, `Standings`, `TeamDetail`, `Stats`, `Auth`, `FantasyHome`, `FantasySquad`, `FantasyGameweeks`, `Home` |
 | Unrouted | 1 | `Teams` (exists, not routed) |
 | Shared | 3 | `MatchList`, `MatchweekSelector`, `LanguageSwitcher` |
 | Services | 10+ | `ApiClient`, `LeagueService`, `MatchesService`, `StandingsService`, `TeamsService`, `StatsService`, `AuthService`, `FantasyService`, `LanguageService`, `TranslateHttpLoader` |
@@ -250,6 +250,7 @@ User ──< FantasyTeam ──< FantasyPick ──> Player
 | `/auth` | `Auth` | Login / Register with client-side validation |
 | `/fantasy` | `FantasyHome` | Fantasy dashboard — team creation, squad overview, leaderboard |
 | `/fantasy/squad` | `FantasySquad` | Squad builder — pick players, set captain, manage budget |
+| `/fantasy/gameweeks/:id` | `FantasyGameweeks` | Gameweek history — per-round points with player breakdowns |
 | `/teams/:id` | `TeamDetail` | Team info + recent matches |
 
 ### Caching strategy
@@ -297,6 +298,9 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 | Standings computation | ✅ | Correct sorting, includes 0-match teams, unit tested |
 | Match detail | ✅ | Events (goals/cards/subs) with assist & substitution details, lineups |
 | Stats computation | ✅ | `GET /stats` — top scorers, assists, cards, clean sheets from MatchEvent aggregation |
+| Scoring engine | ✅ | Goals, assists, clean sheets, cards, captain 2×, vice-captain auto-promotion, per-player breakdown |
+| Admin scoring trigger | ✅ | `POST /fantasy/score-round` with API key guard |
+| Squad lock | ✅ | Prevents pick changes during live matches |
 | Error handling | ✅ | Global exception filter, DTO validation |
 
 ### Frontend — ✅ MVP Complete
@@ -315,6 +319,7 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 | Auth page | ✅ | Login & register with client-side validation, password confirmation |
 | Fantasy dashboard | ✅ | Team creation, squad overview with formation bar, leaderboard with medals |
 | Squad builder | ✅ | Two-panel UI: selected squad (captain/VC/remove) + player pool (position/team/search filter, budget tracking) |
+| Gameweek history | ✅ | Expandable per-round view with per-player point breakdowns |
 | Fantasy sub-nav | ✅ | Layout header shows fantasy navigation when on fantasy routes |
 
 ---
@@ -336,8 +341,8 @@ All services use manual `Map<string, Observable>` caching with `shareReplay({ bu
 
 1. **Teams list page** — `TeamsComponent` exists but is not routed (no `/teams` in route table)
 2. **Player profiles** — `/players/:id` endpoint exists but no frontend page for it
-3. **Gameweek history UI** — Backend supports it, no frontend page yet
-4. **Transfer window logic** — Squad editing is open-ended; no transfer windows or free transfer limits
+3. **Gameweek history UI** — ~~Backend supports it, no frontend page yet~~ ✅ Implemented: expandable round list with per-player scoring breakdown
+4. **Transfer window logic** — ~~Squad editing is open-ended; no transfer windows~~ Partially resolved: squad changes are now blocked during live matches; per-gameweek transfer limits are still not implemented
 5. **Live polling** — Strategy defined but not implemented (no interval-based data refresh)
 6. **Tests** — Only standings utility has meaningful unit tests; `app.spec.ts` is outdated/broken
 7. **CI/CD** — No GitHub Actions workflows
@@ -454,7 +459,11 @@ The fantasy football feature is fully implemented across backend and frontend.
    - `GET /fantasy/players` — available players with prices
    - `GET /fantasy/teams/:id` — view any team detail
    - `GET /fantasy/teams/:id/gameweeks` — gameweek history
-   - **ScoringService**: calculates player points from MatchEvent/MatchLineup data, applies captain 2× multiplier
+   - `GET /fantasy/teams/:id/gameweeks/:round/players` — per-player point breakdown for a gameweek
+   - `POST /fantasy/score-round` — 🔐 admin-only endpoint (x-admin-key header) to trigger scoring for a round
+   - **ScoringService**: calculates player points from MatchEvent/MatchLineup data, applies captain 2× multiplier, vice-captain auto-promotion (if captain didn't play, VC gets 2×)
+   - **AdminKeyGuard**: API-key guard for admin endpoints (checks `x-admin-key` header against `ADMIN_API_KEY` env var)
+   - **Squad lock**: prevents pick changes while any match in the competition has `status=live`
 
 #### Frontend implementation (complete)
 
@@ -478,7 +487,14 @@ The fantasy football feature is fully implemented across backend and frontend.
    - Budget tracker: remaining budget, per-player price display
    - Save picks button with full validation mirroring backend rules
 
-4. **Fantasy sub-navigation**: Layout component shows fantasy nav links when on `/fantasy` routes
+4. **Gameweek history page** (`/fantasy/gameweeks/:id`) — `FantasyGameweeks` component:
+   - Expandable round list showing points per gameweek
+   - Clicking a round expands to show per-player breakdown table
+   - Each player row shows: position badge, name, captain/VC indicator, breakdown chips (appearance, goals, assists, clean sheet, cards), multiplier, total points
+   - Footer row with gameweek total
+   - Responsive: breakdown chips hidden on mobile
+
+5. **Fantasy sub-navigation**: Layout component shows fantasy nav links when on `/fantasy` routes
 
 5. **i18n**: Full fantasy & auth translation keys in EN, KK, RU (80+ new keys)
 
@@ -527,12 +543,11 @@ The project has evolved from idea to a **feature-rich platform** with a fully wo
 - Realistic seed data with position-based player pricing
 
 ### What needs attention next
-1. **Gameweek history UI** — backend endpoint exists, no frontend page
-2. **Transfer windows** — squad editing is currently unlimited; no transfer limits per gameweek
-3. **Technical debt** — duplicate components, missing tests, broken app.spec.ts, `packages/` directory doesn't exist
-4. **Teams page routing** — component exists but isn't accessible
-5. **Player profiles** — endpoint exists, frontend page doesn't
-6. **Live polling** — strategy defined but not implemented
+1. **Transfer limits** — squad editing is blocked during live matches but there are no per-gameweek free transfer limits
+2. **Technical debt** — duplicate components, missing tests, broken app.spec.ts, `packages/` directory doesn't exist
+3. **Teams page routing** — component exists but isn't accessible
+4. **Player profiles** — endpoint exists, frontend page doesn't
+5. **Live polling** — strategy defined but not implemented
 
 The next logical phase is **Phase 4 (Admin & Live)**, with ongoing cleanup of technical debt.
 

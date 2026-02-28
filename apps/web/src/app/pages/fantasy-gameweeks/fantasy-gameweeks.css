@@ -1,0 +1,242 @@
+.gameweeks-page {
+  padding: 0 1.5rem 2rem;
+}
+
+.page-header {
+  margin-bottom: 1.25rem;
+}
+
+.back-link {
+  display: inline-block;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.page-header h1 {
+  font-size: 1.75rem;
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* ── Gameweek rows ──────────────────────────────── */
+
+.gw-list {
+  max-width: 800px;
+}
+
+.gw-row {
+  display: flex;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.gw-row:hover {
+  background: var(--color-surface-muted);
+}
+
+.gw-row.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+}
+
+.gw-round {
+  font-weight: 600;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.gw-points {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 0.95rem;
+  margin-right: 0.75rem;
+}
+
+.gw-chevron {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+/* ── Detail panel ───────────────────────────────── */
+
+.gw-detail {
+  background: var(--color-surface);
+  border: 1px solid var(--color-primary);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.breakdown-table thead th {
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.breakdown-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.breakdown-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.breakdown-table td {
+  padding: 0.45rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.breakdown-table .col-name {
+  font-weight: 500;
+}
+
+.breakdown-table .col-team {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.breakdown-table .col-pts {
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.breakdown-table .col-pts.zero {
+  color: var(--color-muted);
+}
+
+.captain td {
+  font-weight: 600;
+}
+
+.breakdown-table tfoot {
+  border-top: 2px solid var(--color-border-strong);
+}
+
+.total-label {
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.6rem 0.5rem;
+}
+
+.total-value {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+/* ── Badges ──────────────────────────────────────── */
+
+.pos-badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.pos-badge.gk { background: #fef3c7; color: #92400e; }
+.pos-badge.df { background: #dbeafe; color: #1e40af; }
+.pos-badge.mf { background: #d1fae5; color: #065f46; }
+.pos-badge.fw { background: #fce7f3; color: #9d174d; }
+
+.badge-c, .badge-vc {
+  display: inline-block;
+  width: auto;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2rem;
+  margin-left: 0.3rem;
+  vertical-align: middle;
+  padding: 0 0.15rem;
+}
+
+.badge-c { background: var(--color-primary); color: #fff; }
+.badge-vc { background: var(--color-muted); color: #fff; }
+
+/* ── Breakdown chips ─────────────────────────────── */
+
+.col-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.breakdown-chip {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.breakdown-chip.negative {
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+}
+
+.breakdown-chip.multiplier {
+  background: var(--color-accent-bg);
+  color: var(--color-accent-dark);
+  font-weight: 700;
+}
+
+.state-message {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.state-message.small {
+  padding: 1rem;
+  font-size: 0.85rem;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+
+@media (max-width: 650px) {
+  .gameweeks-page {
+    padding: 0 0.75rem 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.35rem;
+  }
+
+  .col-breakdown {
+    display: none;
+  }
+}

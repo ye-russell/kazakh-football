@@ -157,7 +157,13 @@
     "selectCaptain": "Выберите капитана (С) для 2× очков",
     "selectViceCaptain": "Выберите вице-капитана (V)",
     "dashboard": "Обзор",
-    "mySquad": "Мой состав"
+    "mySquad": "Мой состав",
+    "gameweekHistory": "История туров",
+    "noGameweeks": "Нет данных о турах",
+    "round": "Тур",
+    "pts": "оч.",
+    "details": "Подробности",
+    "total": "Итого"
   },
   "auth": {
     "loginTitle": "Вход",

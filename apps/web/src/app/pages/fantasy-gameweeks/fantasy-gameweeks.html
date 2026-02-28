@@ -1,0 +1,86 @@
+<div class="gameweeks-page">
+  <div class="page-header">
+    <a routerLink="/fantasy" class="back-link">← {{ 'fantasy.backToFantasy' | translate }}</a>
+    <h1>{{ 'fantasy.gameweekHistory' | translate }}</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="state-message">{{ 'fantasy.loading' | translate }}</div>
+  }
+
+  @if (!loading() && gameweeks().length === 0) {
+    <div class="state-message">{{ 'fantasy.noGameweeks' | translate }}</div>
+  }
+
+  @if (!loading() && gameweeks().length > 0) {
+    <div class="gw-list">
+      @for (gw of gameweeks(); track gw.round) {
+        <div
+          class="gw-row"
+          [class.active]="selectedRound() === gw.round"
+          (click)="selectRound(gw.round)">
+          <span class="gw-round">{{ 'fantasy.round' | translate }} {{ gw.round }}</span>
+          <span class="gw-points">{{ gw.points }} {{ 'fantasy.pts' | translate }}</span>
+          <span class="gw-chevron">{{ selectedRound() === gw.round ? '▲' : '▼' }}</span>
+        </div>
+
+        @if (selectedRound() === gw.round) {
+          <div class="gw-detail">
+            @if (detailLoading()) {
+              <div class="state-message small">{{ 'fantasy.loading' | translate }}</div>
+            }
+
+            @if (!detailLoading() && detail(); as d) {
+              <table class="breakdown-table">
+                <thead>
+                  <tr>
+                    <th>{{ 'fantasy.pos' | translate }}</th>
+                    <th>{{ 'fantasy.player' | translate }}</th>
+                    <th>{{ 'fantasy.team' | translate }}</th>
+                    <th>{{ 'fantasy.details' | translate }}</th>
+                    <th class="col-pts">{{ 'fantasy.pts' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of d.players; track p.playerId) {
+                    <tr [class.captain]="p.isCaptain" [class.vice-captain]="p.isViceCaptain">
+                      <td>
+                        <span class="pos-badge" [class]="p.position.toLowerCase()">{{ p.position }}</span>
+                      </td>
+                      <td class="col-name">
+                        {{ p.playerName }}
+                        @if (p.isCaptain) { <span class="badge-c">C</span> }
+                        @if (p.isViceCaptain && p.multiplier === 2) { <span class="badge-vc">V×2</span> }
+                        @else if (p.isViceCaptain) { <span class="badge-vc">V</span> }
+                      </td>
+                      <td class="col-team">{{ p.teamShortName }}</td>
+                      <td class="col-breakdown">
+                        @for (entry of p.breakdown | keyvalue; track entry.key) {
+                          <span class="breakdown-chip" [class.negative]="entry.value < 0">
+                            {{ breakdownLabel(entry.key) }} {{ entry.value > 0 ? '+' : '' }}{{ entry.value }}
+                          </span>
+                        }
+                        @if (p.multiplier > 1) {
+                          <span class="breakdown-chip multiplier">×{{ p.multiplier }}</span>
+                        }
+                      </td>
+                      <td class="col-pts" [class.zero]="p.totalPoints === 0">
+                        {{ p.totalPoints }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4" class="total-label">{{ 'fantasy.total' | translate }}</td>
+                    <td class="col-pts total-value">{{ d.gameweekTotal }}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

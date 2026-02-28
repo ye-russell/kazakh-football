@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
   ParseUUIDPipe,
+  ParseIntPipe,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -16,17 +17,24 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiQuery,
+  ApiHeader,
 } from '@nestjs/swagger';
 import { FantasyService } from './fantasy.service';
+import { ScoringService } from './scoring.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AdminKeyGuard } from './admin-key.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { CreateFantasyTeamDto } from './dto/create-fantasy-team.dto';
 import { UpdatePicksDto } from './dto/update-picks.dto';
+import { ScoreRoundDto } from './dto/score-round.dto';
 
 @ApiTags('fantasy')
 @Controller('fantasy')
 export class FantasyController {
-  constructor(private readonly fantasyService: FantasyService) {}
+  constructor(
+    private readonly fantasyService: FantasyService,
+    private readonly scoringService: ScoringService,
+  ) {}
 
   // ── Public endpoints ──────────────────────────────────────────
 
@@ -104,5 +112,36 @@ export class FantasyController {
     dto: UpdatePicksDto,
   ) {
     return this.fantasyService.updatePicks(user.userId, id, dto);
+  }
+
+  // ── Admin endpoints ───────────────────────────────────────────
+
+  @Post('score-round')
+  @UseGuards(AdminKeyGuard)
+  @ApiHeader({ name: 'x-admin-key', description: 'Admin API key' })
+  @ApiOperation({ summary: 'Trigger scoring for a gameweek (admin)' })
+  @ApiResponse({ status: 200, description: 'Scoring completed' })
+  @ApiResponse({ status: 401, description: 'Invalid admin key' })
+  scoreRound(
+    @Body(new ValidationPipe({ transform: true, whitelist: true }))
+    dto: ScoreRoundDto,
+  ) {
+    return this.scoringService.calculateGameweek(
+      dto.competition ?? 'kpl',
+      dto.round,
+    );
+  }
+
+  // ── Per-player gameweek breakdown ─────────────────────────────
+
+  @Get('teams/:id/gameweeks/:round/players')
+  @ApiOperation({ summary: 'Get per-player point breakdown for a gameweek' })
+  @ApiResponse({ status: 200, description: 'Returns player-level scoring' })
+  @ApiResponse({ status: 404, description: 'Team not found' })
+  getGameweekPlayerBreakdown(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('round', ParseIntPipe) round: number,
+  ) {
+    return this.fantasyService.getGameweekPlayerBreakdown(id, round);
   }
 }

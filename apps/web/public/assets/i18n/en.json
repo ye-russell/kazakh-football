@@ -157,7 +157,13 @@
     "selectCaptain": "Select a captain (C) for 2× points",
     "selectViceCaptain": "Select a vice-captain (V)",
     "dashboard": "Dashboard",
-    "mySquad": "My Squad"
+    "mySquad": "My Squad",
+    "gameweekHistory": "Gameweek History",
+    "noGameweeks": "No gameweek data yet",
+    "round": "Round",
+    "pts": "pts",
+    "details": "Details",
+    "total": "Total"
   },
   "auth": {
     "loginTitle": "Log In",

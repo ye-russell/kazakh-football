@@ -6,6 +6,7 @@ import {
   FantasyPlayer,
   LeaderboardEntry,
   GameweekPoints,
+  GameweekDetail,
 } from '../interfaces/api.interfaces';
 
 @Injectable({
@@ -74,6 +75,13 @@ export class FantasyService {
     const endpoint = `/fantasy/teams/${teamId}/gameweeks`;
     return this.getCached(endpoint, () =>
       this.api.get<GameweekPoints[]>(endpoint),
+    );
+  }
+
+  getGameweekPlayerBreakdown(teamId: string, round: number): Observable<GameweekDetail> {
+    const endpoint = `/fantasy/teams/${teamId}/gameweeks/${round}/players`;
+    return this.getCached(endpoint, () =>
+      this.api.get<GameweekDetail>(endpoint),
     );
   }
 

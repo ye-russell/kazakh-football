@@ -14,6 +14,7 @@ export const routes: Routes = [
       { path: 'auth', loadComponent: () => import('./pages/auth/auth').then((m) => m.Auth) },
       { path: 'fantasy', loadComponent: () => import('./pages/fantasy-home/fantasy-home').then((m) => m.FantasyHome) },
       { path: 'fantasy/squad', loadComponent: () => import('./pages/fantasy-squad/fantasy-squad').then((m) => m.FantasySquad) },
+      { path: 'fantasy/gameweeks/:id', loadComponent: () => import('./pages/fantasy-gameweeks/fantasy-gameweeks').then((m) => m.FantasyGameweeks) },
       { path: 'teams/:id', loadComponent: () => import('./pages/team-detail/team-detail').then((m) => m.TeamDetail) },
     ]
   }

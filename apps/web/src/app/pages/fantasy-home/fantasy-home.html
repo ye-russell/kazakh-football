@@ -89,6 +89,9 @@
           <a routerLink="/fantasy/squad" class="btn-primary squad-btn">
             {{ team.picks.length > 0 ? ('fantasy.editSquad' | translate) : ('fantasy.pickSquad' | translate) }}
           </a>
+          <a [routerLink]="'/fantasy/gameweeks/' + team.id" class="btn-outline gameweek-btn">
+            {{ 'fantasy.gameweekHistory' | translate }}
+          </a>
         </div>
 
         <!-- Squad list card -->

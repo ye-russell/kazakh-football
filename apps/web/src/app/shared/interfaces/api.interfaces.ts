@@ -210,3 +210,22 @@ export interface GameweekPoints {
   round: number;
   points: number;
 }
+
+export interface GameweekPlayerBreakdown {
+  playerId: string;
+  playerName: string;
+  position: string;
+  teamShortName: string;
+  isCaptain: boolean;
+  isViceCaptain: boolean;
+  rawPoints: number;
+  multiplier: number;
+  totalPoints: number;
+  breakdown: Record<string, number>;
+}
+
+export interface GameweekDetail {
+  round: number;
+  gameweekTotal: number;
+  players: GameweekPlayerBreakdown[];
+}
